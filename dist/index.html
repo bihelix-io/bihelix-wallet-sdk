@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>rgb wallet test</title>
+        <script src="./js/walletsdk.js"></script>
+        <style>
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
+                background-color: #000222;
+            }
+
+            .container {
+                width: 400px;
+                height: 450px;
+                border: 2px solid orange;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                padding: 20px;
+            }
+
+            .buttons {
+                display: flex;
+                justify-content: space-around;
+            }
+
+            button {
+                padding: 10px 20px;
+                background-color: #007bff;
+                color: white;
+                border: none;
+                cursor: pointer;
+            }
+
+            input {
+                padding: 10px;
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .topInput {
+                margin-top: 50px;
+                width: 300px;
+            }
+
+            .bottomInput {
+                margin-bottom: 10px;
+                height: 190px;
+                background: #000033;
+                border: 1px solid white;
+                width:100%;  
+                word-break:keep-all;
+                white-space:nowrap;
+                overflow:hidden;
+                text-overflow:ellipsis;
+                color: white;
+            }
+
+            #loginButton {
+                padding: 10px 20px;
+                background-color: #28a745;
+                color: white;
+                border: none;
+                cursor: pointer;
+            }
+
+            .returnButton {
+                padding: 10px 20px;
+                background-color: #dc3545;
+                color: white;
+                border: none;
+                cursor: pointer;
+                width: 165px;
+            }
+
+            .textArea {
+                width: 95%;
+                height: 260px;
+                margin-top: 20px;
+            }
+
+            .textAreaCont {
+                width: 95%;
+                height: 190px;
+                margin-top: 10px;
+            }
+
+            .walletBtnId {
+                margin-top: 20px;
+            }
+
+            .walletButton {
+                padding: 10px 20px;
+                background-color: #dc3545;
+                color: white;
+                border: none;
+                cursor: pointer;
+                width: 120px;
+            }
+
+            .myDiv {
+                color: white;
+            }
+
+            .myDivSelect {
+                color: white;
+                font-size: 18px;
+            }
+
+            .divWalletBtn {
+                margin-top: 160px;
+                background-color: #dc3545;
+                color: white;
+                border: none;
+                cursor: pointer;
+                width: 350px;
+            }
+
+            .loginOut {
+                margin-left: 120px;
+            }
+
+            .myTable {
+                width: 98%;
+                height: 190px;
+                margin-top: 0px;
+                color: white;
+                border: solid;
+                table-layout:fixed;
+            }
+
+            .myTable tr td {
+                border: 1px solid white;
+                width:100%;  
+                word-break:keep-all;
+                white-space:nowrap;
+                overflow:hidden;
+                text-overflow:ellipsis;
+            }
+
+            .myAssetTable {
+                width: 98%;
+                margin-top: 10px;
+                color: white;
+                border: 0px;
+                table-layout:fixed;
+                background: #000033;
+            }
+
+            .myAssetTable tr td {
+                border: 0px solid white;
+                width:100%;  
+                word-break:keep-all;
+                white-space:nowrap;
+                overflow:hidden;
+                text-overflow:ellipsis;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container" id="mainContainer">
+            <di class='myDivSelect'>
+                env: <select id="env" name="env">
+                        <option value="testnet">testnet</option>
+                        <option value="bitcoin">bitcoin</option> 
+                     </select>
+                <button class="loginOut" id="loginOut" name="loginOut"> loginOut </button>
+            </di>
+            <div>
+                <input type="text" class="topInput" placeholder="amount" name="money" id="money">
+                <button id="refreshBtn" name="refreshBtn"> refresh </button>
+            </div>
+            <div class="buttons">
+                <button id="issueBtn" name="issueBtn"> issue </button>
+                <button id="receiveBtn" name="receiveBtn"> receive </button>
+                <button id="sendBtn" name="sendBtn"> send </button>
+                <button id="transferBtn" name="transferBtn"> transfer </button>
+                <button id="historyBtn" name="historyBtn"> history </button>
+            </div>
+            <table class="myAssetTable" id="assetIdList">
+                <tr>
+                    <td>Asset</td>
+                    <td>aseetID</td>
+                    <td>amount</td>
+                </tr>
+            </table>
+            <button id="loginBtn" name="loginBtn"> create wallet </button>
+        </div>
+        <script src="./js/index.js"></script>
+    </body>
+</html>

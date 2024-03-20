@@ -1,0 +1,32 @@
+{
+  "name": "bihelix-wallet-sdk",
+  "version": "1.0.0",
+  "description": "BiHelix Wallet SDK",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack --mode production",
+    "dev": "webpack-dev-server --open"
+  },
+  "keywords": [
+    "bihelix",
+    "rgb20"
+  ],
+  "author": "BiHelix",
+  "license": "ISC",
+  "devDependencies": {
+    "webpack": "^4.23.1",
+    "webpack-cli": "^3.1.2",
+    "webpack-dev-server": "^3.1.10"
+  },
+  "dependencies": {
+    "bip32": "^2.0.5",
+    "bip39": "latest",
+    "bitcoinjs-lib": "^5.2.0",
+    "browserify": "^17.0.0",
+    "eslint-loader": "^4.0.2",
+    "node-gyp": "^10.0.1",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.6",
+    "tiny-secp256k1": "latest"
+  }
+}
