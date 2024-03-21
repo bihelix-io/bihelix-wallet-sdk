@@ -1,3 +1,6 @@
+// let URL = "http://13.213.87.244:8001";// regtest
+let URL = "https://tp-testnet.bihelix.io";// testnet
+
 let env = getDataFromLocalStorage('env');
 let selectElement = document.getElementById("env");
 if (!env) {
@@ -22,7 +25,8 @@ if (walletInfo) {
 	password = walletInfo.password;
 	mnemonic = walletInfo.mnemonic;
 	pubKey = walletInfo.pubKey;
-	let socket = new WebSocket('ws://13.213.87.244:8003/?pk=' + pubKey);
+	// let socket = new WebSocket('ws://13.213.87.244:8003/?pk=' + pubKey); // regtest
+	/**let socket = new WebSocket('ws://ws-tp-testnet.bihelix.io/?pk=' + pubKey); // regtest
 
 	// open socket 
   	socket.onopen = function(event) { 
@@ -55,10 +59,10 @@ if (walletInfo) {
 
   	function send(message){
 	    socket.send('connect success');
-  	}
+  	}*/
 }
 
-let walletSDK = new WalletSDK(env, mnemonic, password); //env: reg test prod
+let walletSDK = new WalletSDK(URL, {"network":env, mnemonic, password}); //env: reg test prod
 let assetId = getDataFromLocalStorage('assetId'+env);
 
 function showText(id) {;
@@ -202,7 +206,7 @@ function showText(id) {;
 		        <div class="myDiv">
 		        	assetId: <input type="text" style="font-size: 14px; width: 265px;" name="assetId" id="assetId" value="" />
 		        <div>
-		        <textarea class="textArea" id="walletId"></textarea>
+		        <textarea class="textArea" id="walletId">mnemonic</textarea>
 		        <div class='walletBtnId'>
 	        		<button class="walletButton" id="backBtn" name="backBtn">back</button>
 	        		<button class="walletButton" id="walletSubmit" name="walletSubmit">submit</button>
@@ -297,6 +301,7 @@ async function showAssetList() {
 		let totalBalance = 0;
 		let assetDataList = await walletSDK.assetList(walletInfo.pubKey, "rgb20,rgb21,rgb25");
 		let dataList = assetDataList.data;
+		console.log("dataList====",dataList);		
 		if (dataList) {
 			let niaList = dataList.nia;
 			let udaList = dataList.uda;
@@ -319,7 +324,9 @@ async function showAssetList() {
 			}
 			if (!assetId) {
 				let moneyText = document.getElementById('money');
-				moneyText.value = 'balance:' + totalBalance; 
+				if (moneyText) {
+					moneyText.value = 'balance:' + totalBalance; 
+				}
 			}
 		}
 	} else {
@@ -456,13 +463,20 @@ async function transfer() {
 		assetId = getDataFromLocalStorage('assetId' + env);
 	}
 
+	if (!assetId) {
+		assetId = document.getElementById("assetId").value;
+		if (assetId) {
+			setDataToLocalStorage('assetId' + env, assetId);
+		}
+	}
+
 	let amount = document.getElementById("amount").value;
 	if (!amount) {
 		alert("amount cannot be empty");
         return;
 	}
 
-	let res = await walletSDK.transferList(recPubKey, sendPubKey, assetId, amount);
+	let res = await walletSDK.transfer(recPubKey, sendPubKey, assetId, amount);
 	if (res.code == 0) {
 		setDataToLocalStorage('transferData' + env, res);
 	}
@@ -481,7 +495,7 @@ async function historyList() {
 		assetId = getDataFromLocalStorage('assetId' + env);
 	}
 
-	let res = await walletSDK.historyList(pubKey, assetId);
+	let res = await walletSDK.getHistoryTransaction(pubKey, assetId);
 	if (res.code == 0) {
 		setDataToLocalStorage('historyData' + env, res);
 		showHistoryData(res.data);
@@ -496,7 +510,7 @@ async function createWallet() {
 
 	let derivationPath = document.getElementById('derivationPath').value;
 	
-	let res = await walletSDK.createBitcoinAccount(password, derivationPath);
+	let res = await walletSDK.createRGBWallet('', password, derivationPath);
 	let data = res.data;
 	data['password'] = password;
 	setDataToLocalStorage('walletData' + env, data);
@@ -516,11 +530,10 @@ async function importWallet() {
 
 	let assetId = document.getElementById("assetId").value;
 	if (assetId) {
-		assetId = 'rgb:2Y6YYxD-iS2fXRdR1-7mQwVGdiJ-z5bD1KGTK-NPUiR88YM-dK5y15Q';
 		setDataToLocalStorage('assetId' + env, assetId);
 	}
 
-	let res = await walletSDK.newWalletFromMnomonic(mnemonic, password, derivationPath);
+	let res = await walletSDK.createRGBWallet(mnemonic, password, derivationPath);
 	let data = res.data;
 	data['password'] = password;
 	setDataToLocalStorage('walletData' + env, data);
@@ -546,28 +559,28 @@ document.getElementById('loginBtn').addEventListener('click', async function() {
 	}
 });
 
-document.getElementById('issueBtn').addEventListener('click', async function() {
-	showText('issueBtn');
+// document.getElementById('issueBtn').addEventListener('click', async function() {
+// 	showText('issueBtn');
 
-	let textarea = document.getElementById('issueId');
-	let issueData = getDataFromLocalStorage('issueData' + env);
-	if (issueData) {
-    	textarea.value = 'RESPONSE RESULT: \n' + JSON.stringify(issueData);
-    }
+// 	let textarea = document.getElementById('issueId');
+// 	let issueData = getDataFromLocalStorage('issueData' + env);
+// 	if (issueData) {
+//     	textarea.value = 'RESPONSE RESULT: \n' + JSON.stringify(issueData);
+//     }
     
-    if (walletInfo) {
-    	let pubKeyText = document.getElementById('pubKey');
-    	pubKeyText.value = walletInfo.pubKey;
-    }
+//     if (walletInfo) {
+//     	let pubKeyText = document.getElementById('pubKey');
+//     	pubKeyText.value = walletInfo.pubKey;
+//     }
     
-    document.getElementById('backBtn').addEventListener('click', function() {
-		location.reload();
-	});
+//     document.getElementById('backBtn').addEventListener('click', function() {
+// 		location.reload();
+// 	});
 
-	document.getElementById('issueSubmit').addEventListener('click', async function() {
-		await issue();
-	});
-});
+// 	document.getElementById('issueSubmit').addEventListener('click', async function() {
+// 		await issue();
+// 	});
+// });
 
 document.getElementById('receiveBtn').addEventListener('click', async function() {
 	showText('receiveBtn');
@@ -693,17 +706,17 @@ function clearData(key) {
 	localStorage.removeItem(key);
 };
 
-document.getElementById('refreshBtn').addEventListener('click', async function() {
-	if (pubKey) {
-		let refreshRes = await walletSDK.refresh(pubKey);
-		let i=0;
-		let interVal = setInterval(async() => {
-			refreshRes = await walletSDK.refresh(pubKey);
-			let amount = await getWalletAmount();
-			if (amount > 0 || i >= 10) {
-				clearInterval(interVal);
-				interVal = null;
-			}
-		}, 30000);
-	}
-});
+// document.getElementById('refreshBtn').addEventListener('click', async function() {
+// 	if (pubKey) {
+// 		let refreshRes = await walletSDK.refresh(pubKey);
+// 		let i=0;
+// 		let interVal = setInterval(async() => {
+// 			refreshRes = await walletSDK.refresh(pubKey);
+// 			let amount = await getWalletAmount();
+// 			if (amount > 0 || i >= 10) {
+// 				clearInterval(interVal);
+// 				interVal = null;
+// 			}
+// 		}, 30000);
+// 	}
+// });
