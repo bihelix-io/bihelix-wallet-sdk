@@ -1,285 +1,254 @@
 # BiHelix Wallet SDK
+
 The BiHelix Wallet SDK is an innovative wallet solution tailored for Web3 users and developers, providing them with secure and reliable support for native Bitcoin transactions, ensuring seamless digital asset management. Additionally, the BiHelix Wallet SDK integrates RGB protocol and Lightning Network (LN) technology, enabling developers to effortlessly integrate RGB protocol and Bitcoin payments into their applications with a very shallow learning curve. As the premier choice based on the native Bitcoin blockchain, the BiHelix Wallet SDK offers powerful and flexible tools, empowering you to easily take control of your Web3 assets.
 
 The BiHelix Wallet SDK offers the following services:
+
 - RGB Asset Protocol (currently supporting RGB20, with upcoming support for RGB21, RGB22, and more)
 - Client-side PSBT signer
-- Boost transfer supported with BiHelix BIE technology
+- Multi-transfer supported
+- Boost transfer supported with BiHelix BID technology
 - PayJoin, CoinJoin procotol will be supported soon
 
 ## Contents
+
 - [Installation](#Installation)
 - [Usage](#Usage)
 - [Diagram](#Diagram)
 - [Methods](#Methods)
-  - [getMnemonic](#getMnemonic)
-  - [getPubPrivKey](#getPubPrivKey)
-  - [createRGBWallet](#createRGBWallet)
-  - [getAssetBalance](#getAssetBalance)
-  - [transfer](#transfer)
-  - [recieve](#recieve)
-  - [send](#send)
-  - [getHistoryTransaction](#getHistoryTransaction)
+  - [assetBalance](#assetBalance)
+  - [transactionList](#transactionList)
+  - [receiveAsset](#receiveAsset)
+  - [createAssetPsbt](#createAssetPsbt)
+  - [signPSBT](#signPSBT)
+  - [acceptAsset](#acceptAsset)
 
 ## Installation
+
 ```bash
 npm install https://github.com/bihelix-io/bihelix-wallet-sdk
 ```
 
 ## Usage
-Two ways wallet instance can be initialized.
+
+Initialize wallet instance.
+
 ```javascript
-const SDK = require("bihelix-wallet-sdk")
+// import sdk package
+const SDK = require("bihelix-wallet-sdk");
 
-// provider required and cannot be empty, default bitcoin mainnet, mnemonic generated automatically
-const sdk = new SDK(provider);
-
-// provider required and cannot be empty, specific parameters given, network = bitcoin|testnet|regtest (default bitcoin)
-const sdk = new SDK(provider, {
-    network: "bitcoin",
-    mnemonic: "bullet,couple,ostrich,thumb,category,estate,machine,logic,depart,satisfy,ball,rural",
-    password: "123456"
-});
-```
-
-Create Account
-```javascript
-const account = sdk.createRGBWallet()
+// pubKey format provided as followed: include fingerprint, hardened derivation(must be m/86'/1'/0'/9)
+// wpkh([27aadcbe/86h/1h/0h/9h]tpubDE6PJcj5LtD...aKTJTTs4zL1ygwYNe/0/*)#l4gyh4a3
+const sdk = new SDK(provider, pubKey);
 ```
 
 ## Diagram
-RGB20 token transfer process.
-![Transfer](./ext/diagram/transfer.png)
+
+RGB20 token (multi) transfer process.
+![Transfer](./doc/diagram/transfer.png)
 
 ## Methods
-### getMnemonic
+
+### assetBalance
+
 #### Description
-Generate a random mnemonic.
+
+Get asset balance for specific asset id.
 
 #### Example
+
 ```javascript
-const mnemonic = sdk.getMnemonic();
+const assetId = "rgb:TtFdiA7-obrjvvTbK-b8VrWD9ne-y9NyAPYha-qvSRrrh7s-aJ6Qs7";
+const result = sdk.assetBalance(assetId);
 ```
 
 #### Parameters
-None
+
+- assetId: string
 
 #### Returns
+
 ```json
 {
-    "code":0,
-    "msg":"success",
-    "data":{
-        "mnemonic":"bullet,couple,ostrich,thumb,category,estate,machine,logic,depart,satisfy,ball,rural"
+  "code": 0,
+  "msg": null,
+  "data": {
+    "settled": 10000,
+    "future": 10000,
+    "spendable": 10000
+  }
+}
+```
+
+### transactionList
+
+#### Description
+
+Fetch all history transations for specific asset id.
+
+#### Example
+
+```javascript
+const assetId = "rgb:TtFdiA7-obrjvvTbK-b8VrWD9ne-y9NyAPYha-qvSRrrh7s-aJ6Qs7";
+const result = sdk.transactionList(assetId);
+```
+
+#### Parameters
+
+- assetId: string
+
+#### Returns
+
+```json
+{
+  "code": 0,
+  "msg": null,
+  "data": [
+    {
+      "idx": 1,
+      "created_at": 1711703957,
+      "updated_at": 1711703957,
+      "status": "Settled",
+      "amount": 100000,
+      "kind": "Issuance"
     }
+  ]
 }
 ```
 
-### getPubPrivKey
+### receiveAsset
+
 #### Description
-Generate public, private key pair by mnemonic.
+
+Create a transaction invoice form receiver.
 
 #### Example
+
 ```javascript
-const result = sdk.getPubPrivKey(mnemonic);
+const recPubKeys = "wpkh([a8b0c10f/86/1/0/9]tpubzcnE7e7...Sowq4Jwjg1EV4Qm61W/0/*),wpkh([27aadcbe/86h1/0/9]tpubDE6PsKkaL69G...NeTBH1wgwYNe/0/*)";
+const assetId = "rgb:TtFdiA7-obrjvvTbK-b8VrWD9ne-y9NyAPYha-qvSRrrh7s-aJ6Qs7";
+const amounts = "1000,2000";
+const result = sdk.receiveAsset(recPubKeys, assetId, amounts);
 ```
 
 #### Parameters
-- mnemonic: string
-- password: string, default=""
-- derivationPath: string, default="m/86'/1'/0'/9"
-- type: string, default="rgb"
+
+- recPubKeys: string Multiple receive pubKey separated by commas
+- assetId: string
+- amounts: string each amount to be send
 
 #### Returns
+
 ```json
 {
-    "code":0,
-    "msg":"success",
-    "data":{
-        "pubKey":"tpubD6NzVbkrYhZ4Xsc9GzcTcUFfb5aqUf956MyeUTfenWUUUpdDwYKLneHN9g3tcCHeNDLVDftgx7RCxKuf8SRTGP3Qix9LEc679uMdz9n8jkf",
-        "address":"tb1qkyes053gsvf4phf5nl2rcaa0pnzmpcnmq8geej",
-        "privateKey":"cUtocvDv77JBKLHo3QPQADTWsnWfm6XZt6igguCb3nRfUWjzNH1e"
+  "code": 0,
+  "msg": null,
+  "data": [
+    {
+      "invoice": "rgb:2uxU95k-eh4dzC1y3-tfM2Mka5T-aMfWoH8/RGB20/1000+utxob:JGV9FPn-8y2FjqwHv-BF6bmZ?expiry=1711940171&endpoints=rpc://10.0.0.162/json-rpc",
+      "recipient_id": "utxob:JGV9FPn-rcRxeC1cd-uTHsTF7Mk-Mvj5PKuV8-8y2FjqwHv-BF6bmZ",
+      "expiration_timestamp": 1711940171
     }
+  ]
 }
 ```
 
-### createRGBWallet
+### createAssetPsbt
+
 #### Description
-Create a rgb wallet instance.
+
+create asset psbt.
 
 #### Example
+
 ```javascript
-const result = sdk.createRGBWallet(mnemonic, password, derivationPath, feeRate, upTo);
+const assetId = "rgb:TtFdiA7-obrjvvTbK-b8VrWD9ne-y9NyAPYha-qvSRrrh7s-aJ6Qs7";
+const amounts = "1000,2000";
+const invoices = "rgb:2uxU95k-eh4dzC1y3-...&endpoints=rpc://127.0.0.1/json-rpc,rgb:2uxU95...&endpoints=rpc://127.0.0.1/json-rpc";
+const result = sdk.createAssetPsbt(assetId, amounts, invoices);
 ```
 
 #### Parameters
-- mnemonic: string default=""
-- password: string default=""
-- derivationPath: string, default="m/86'/1'/0'/9"
-- feeRate: string, default=1.5
-- upTo: boolean, default=true
+
+- assetId: string
+- amounts: string each amount to be send
+- invoices: string each invoice to be send
 
 #### Returns
+
 ```json
 {
-   "code":0,
-   "msg":"success",
-   "data":{
-      "pubKey":"tpubD6NzVbkrYhZ4Xsc9GzcTcUFfb5aqUf956MyeUTfenWUUUpdDwYKLneHN9g3tcCHeNDLVDftgx7RCxKuf8SRTGP3Qix9LEc679uMdz9n8jkf",
-      "address":"tb1qkyes053gsvf4phf5nl2rcaa0pnzmpcnmq8geej",
-      "privateKey":"cUtocvDv77JBKLHo3QPQADTWsnWfm6XZt6igguCb3nRfUWjzNH1e",
-      "mnemonic":"bullet,couple,ostrich,thumb,category,estate,machine,logic,depart,satisfy,ball,rural"
-   }
+  "code": 0,
+  "msg": "success",
+  "data": {
+    "psbtStr": "cHNidP8BAH0BAAAAA...VYAAAABAAAAAACQAAAAA=",
+    "recipientIds": "utxob:JGV9FPn-rcRxeC1...v-BF6bmZ,utxob:DxvnPGz-NKfPf...iD-fgpej8nu7-ggheVt",
+    "pathList": ["m/86/1/0/9/0/2"],
+    "assetId": "rgb:2uxU95k-eh4dzC1y3-tfM2Mka5T-eakP4Rh66-MZiA2vUe1-aMfWoH8"
+  }
 }
 ```
 
-### getAssetBalance
+### signPSBT
+
 #### Description
-Get asset balance.
+
+psbt sign.
+
 #### Example
 
 ```javascript
-const result = sdk.getAssetBalance(pubKey, assetId);
+const psbtStr = "cHNidP8BAH0BAAAAATazRphM3Wknh...AAAAAAAACwAAAAA=";
+const privKeys = "cS1xrY3NBeQKvzFqee3b9VeEhCHDmrfE66Y5wpPoRjXfj2iHA6iU,cS177Y3NBeQKvzFqee3b9VeEhggDmrfE5SY5wpP77jXfj2iHA6iU";
+const result = sdk.signPSBT(psbtStr, privKeys);
 ```
 
 #### Parameters
-- pubKey: string
-- assetId: string
+
+- psbtStr: string
+- privKeys: string Multiple privateKey separated by commas
 
 #### Returns
+
 ```json
 {
-   "code":0,
-   "msg":"success",
-   "data":{
-      "settled":10000,
-      "future":10000,
-      "spendable":10000
-   }
+  "code": 0,
+  "msg": "success",
+  "data": {
+    "psbt": "cHNiuywRIV8EKkSjPxX2Ec6CXAc0mmhzkAw...ysUh4RiBrqXbVAAAAACQAABBB0AAAAA"
+  }
 }
 ```
 
-### transfer
+### acceptAsset
+
 #### Description
-Creating a transaction form sender to receiver.
+
+accecpt asset.
 
 #### Example
+
 ```javascript
-const result = sdk.transfer(reciPubKeys, sendPk, assetId, amounts, donation, assetTypes)
+const psbt = "cHNid678AH0BAAAAATazRphM3Wknh...AAAAAAAACwAACCA=";
+const assetId = "rgb:TtFdiA7-obrjvvTbK-b8VrWD9ne-y9NyAPYha-qvSRrrh7s-aJ6Qs7";
+const recipientIds = "utxob:K91zpuP-ykQsfNC9x-xGtASYUuE-3Zxrzerps,utxob:9K12puP-ykSSfNC9x-xGtTTYUuE-3Zxrzerps";
+const result = sdk.acceptAsset(psbt, assetId, recipientIds);
 ```
 
 #### Parameters
-- reciPubKeys: string   Multiple reciPubKeys separated by commas
-- sendPk: string
+
+- psbt: string
 - assetId: string
-- amounts: string   Multiple amounts separated by commas
-- donation: boolean default=false
-- assetTypes: string default="rgb20,rgb21,rgb25"
+- recipientIds: string Multiple recipientId separated by commas
 
 #### Returns
+
 ```json
 {
-   "code":0,
-   "msg":"success",
-   "data":{
-      "txid":"de2de8c516115531cafb4a8d16a81074aa30e60aa54bdae798de29d8ab85d1cc"
-   }
+  "code": 0,
+  "msg": "success",
+  "data": {
+    "txid": "2f66a276ce773d7ccf0ab4c86aaa645b56c2cc6998138b8895d558cb9fss320b"
+  }
 }
-```
-
-### recieve
-#### Description
-Creating a transaction invoice form receiver.
-
-#### Example
-```javascript
-const result = sdk.recieve(recPubKey, sendPubKey, assetId, amount, assetTypes)
-```
-
-#### Parameters
-- recPubKey: string
-- sendPubKey: string
-- assetId: string
-- amount: float
-- assetTypes: string, default="rgb20,rgb21,rgb25"
-
-#### Returns
-```json
-{
-   "code":0,
-   "msg":"success",
-   "data":{
-      "invoice":"rgb:2JcBsah-PHvhjrGp8-ZcbqkNEvF-QezXSoSAA-voyB3tvmQ-widUsE8/RGB20/2+utxob:qV7JwRs-KjvXpuVfA-LJR6hWfK7-avZ6iZQeV-ntaKD3mBT-ehGsGJ?expiry=1709199079&endpoints=rpc://127.0.0.1:4001/json-rpc",
-      "recipient_id":"utxob:qV7JwRs-KjvXpuVfA-LJR6hWfK7-avZ6iZQeV-ntaKD3mBT-ehGsGJ",
-      "expiration_timestamp":1709199079
-   }
-}
-```
-
-### send
-#### Description
-Creating a transaction form sender.
-
-#### Example
-```javascript
-const result = sdk.send(pubKey, assetId, amounts, invoices, donation)
-```
-
-#### Parameters
-- pubKey: string
-- assetId: string
-- amounts: array
-- invoices: array
-- donation: boolean default=false
-
-#### Returns
-```json
-{
-   "code":0,
-   "msg":"success",
-   "data":{
-      "txid":"2f56a276ce4f3d7ccf0ab4c86aed645b56c2cc6998138b8895d558cb9fc3320b"
-   }
-}
-```
-
-### getHistoryTransaction
-#### Description
-Fetch all history transations.
-
-#### Example
-```javascript
-const result = sdk.getHistoryTransaction(pubKey, assetId)
-```
-
-#### Parameters
-- pubKey: string
-- assetId: string
-
-#### Returns
-```json
-[
-   {
-      "idx":1,
-      "created_at":1710815086,
-      "updated_at":1710815186,
-      "status":"Settled",
-      "amount":5000,
-      "kind":"ReceiveBlind",
-      "txid":"0921629f6edde00f05bf67c82daf8927ef31fccb875ceb2cc4167950ae7b6f72",
-      "recipient_id":"utxob:ALWUgEa-pU82WNuYE-r4XvfYUrU-Z5ZZgn5Dr-GpFExCGPP-r82izT",
-      "receive_utxo":{
-         "txid":"1e2d362915354bec0c84ebf5eef948d414734f602002bb4f30692ca1615e4948",
-         "vout":0
-      },
-      "expiration":1710818686,
-      "transport_endpoints":[
-         {
-            "endpoint":"http://127.0.0.1:4001/json-rpc",
-            "transport_type":"JsonRpc",
-            "used":true
-         }
-      ]
-   }
-]
 ```
