@@ -16,10 +16,11 @@ The BiHelix Wallet SDK offers the following services:
 - [Usage](#Usage)
 - [Diagram](#Diagram)
 - [Methods](#Methods)
+  - [assetList](#assetList)
   - [assetBalance](#assetBalance)
   - [transactionList](#transactionList)
-  - [receiveAsset](#receiveAsset)
-  - [createAssetPsbt](#createAssetPsbt)
+  - [createAssetInvoice](#createAssetInvoice)
+  - [createAssetPSBT](#createAssetPSBT)
   - [signPSBT](#signPSBT)
   - [acceptAsset](#acceptAsset)
 
@@ -37,17 +38,62 @@ Initialize wallet instance.
 // import sdk package
 const SDK = require("bihelix-wallet-sdk");
 
-// pubKey format provided as followed: include fingerprint, hardened derivation(must be m/86'/1'/0'/9)
-// wpkh([27aadcbe/86h/1h/0h/9h]tpubDE6PJcj5LtD...aKTJTTs4zL1ygwYNe/0/*)#l4gyh4a3
-const sdk = new SDK(provider, pubKey);
+// address = "tb1qqek00zlz2eea4r9jkv2hzfss4l0uqayk485xr7"
+const sdk = new SDK(provider, address);
 ```
 
 ## Diagram
 
 RGB20 token (multi) transfer process.
-![Transfer](./doc/diagram/transfer.png)
+
+![Transfer](./doc/diagram/transfer.jpg)
 
 ## Methods
+
+### assetList
+
+#### Description
+
+Get asset list.
+
+#### Example
+
+```javascript
+const assetTypes = "rgb20";
+const result = sdk.assetList(assetTypes);
+```
+
+#### Parameters
+
+- assetTypes: string
+
+#### Returns
+
+```json
+{
+  "code": 0,
+  "msg": null,
+  "data": {
+    "nia": [
+      {
+        "asset_id": "rgb:28wpguQ-7wwJKcgFa-1d4Ewa4Ys-yToGwHm7E-6bYSKoEhX-rMugpkP",
+        "asset_iface": "RGB20",
+        "ticker": "YANG",
+        "name": "YANG",
+        "precision": 8,
+        "issued_supply": 10000,
+        "timestamp": 1712653848,
+        "added_at": 1712653848,
+        "balance": {
+          "settled": 10000,
+          "future": 5000,
+          "spendable": 5000
+        }
+      }
+    ]
+  }
+}
+```
 
 ### assetBalance
 
@@ -116,7 +162,7 @@ const result = sdk.transactionList(assetId);
 }
 ```
 
-### receiveAsset
+### createAssetInvoice
 
 #### Description
 
@@ -125,15 +171,15 @@ Create a transaction invoice form receiver.
 #### Example
 
 ```javascript
-const recPubKeys = "wpkh([a8b0c10f/86/1/0/9]tpubzcnE7e7...Sowq4Jwjg1EV4Qm61W/0/*),wpkh([27aadcbe/86h1/0/9]tpubDE6PsKkaL69G...NeTBH1wgwYNe/0/*)";
+const address = "tb1qqek00zlz2eea4r9jkv2hzfss4l0uqayk485xr7,tb1qskr93hdje2pcnp6w558zxxp6wenvc7emvdm567";
 const assetId = "rgb:TtFdiA7-obrjvvTbK-b8VrWD9ne-y9NyAPYha-qvSRrrh7s-aJ6Qs7";
 const amounts = "1000,2000";
-const result = sdk.receiveAsset(recPubKeys, assetId, amounts);
+const result = sdk.createAssetInvoice(address, assetId, amounts);
 ```
 
 #### Parameters
 
-- recPubKeys: string Multiple receive pubKey separated by commas
+- address: string Multiple receive address separated by commas
 - assetId: string
 - amounts: string each amount to be send
 
@@ -153,7 +199,7 @@ const result = sdk.receiveAsset(recPubKeys, assetId, amounts);
 }
 ```
 
-### createAssetPsbt
+### createAssetPSBT
 
 #### Description
 
@@ -162,14 +208,18 @@ create asset psbt.
 #### Example
 
 ```javascript
+const pubKey =
+  "wpkh([a8b0c10f/86/1/0/9]tpubDE89YTZ8zcnE7e74aY5ai4uHvqc5DeNp4cQJDWdmcXGyRhzkkq47sEHSehBHZUVAMJ7wekwVumWn6Sowq4JwjCzCVKQz2qSgzD1EV4Qm61W/0/*)";
 const assetId = "rgb:TtFdiA7-obrjvvTbK-b8VrWD9ne-y9NyAPYha-qvSRrrh7s-aJ6Qs7";
 const amounts = "1000,2000";
-const invoices = "rgb:2uxU95k-eh4dzC1y3-...&endpoints=rpc://127.0.0.1/json-rpc,rgb:2uxU95...&endpoints=rpc://127.0.0.1/json-rpc";
-const result = sdk.createAssetPsbt(assetId, amounts, invoices);
+const invoices =
+  "rgb:2uxU95k-eh4dzC1y3-...&endpoints=rpc://127.0.0.1/json-rpc,rgb:2uxU95...&endpoints=rpc://127.0.0.1/json-rpc";
+const result = sdk.createAssetPSBT(pubKey, assetId, amounts, invoices);
 ```
 
 #### Parameters
 
+- pubKey: string
 - assetId: string
 - amounts: string each amount to be send
 - invoices: string each invoice to be send
@@ -183,7 +233,7 @@ const result = sdk.createAssetPsbt(assetId, amounts, invoices);
   "data": {
     "psbtStr": "cHNidP8BAH0BAAAAA...VYAAAABAAAAAACQAAAAA=",
     "recipientIds": "utxob:JGV9FPn-rcRxeC1...v-BF6bmZ,utxob:DxvnPGz-NKfPf...iD-fgpej8nu7-ggheVt",
-    "pathList": ["m/86/1/0/9/0/2"],
+    "pathList": ["m/86/1/0/9/0/2", "m/86/1/0/9/0/6"],
     "assetId": "rgb:2uxU95k-eh4dzC1y3-tfM2Mka5T-eakP4Rh66-MZiA2vUe1-aMfWoH8"
   }
 }
@@ -199,7 +249,8 @@ psbt sign.
 
 ```javascript
 const psbtStr = "cHNidP8BAH0BAAAAATazRphM3Wknh...AAAAAAAACwAAAAA=";
-const privKeys = "cS1xrY3NBeQKvzFqee3b9VeEhCHDmrfE66Y5wpPoRjXfj2iHA6iU,cS177Y3NBeQKvzFqee3b9VeEhggDmrfE5SY5wpP77jXfj2iHA6iU";
+const privKeys =
+  "cS1xrY3NBeQKvzFqee3b9VeEhCHDmrfE66Y5wpPoRjXfj2iHA6iU,cS177Y3NBeQKvzFqee3b9VeEhggDmrfE5SY5wpP77jXfj2iHA6iU";
 const result = sdk.signPSBT(psbtStr, privKeys);
 ```
 
@@ -229,17 +280,18 @@ accecpt asset.
 #### Example
 
 ```javascript
+const pubKey =
+  "wpkh([a8b0c10f/86/1/0/9]tpubDE89YTZ8zcnE7e74aY5ai4uHvqc5DeNp4cQJDWdmcXGyRhzkkq47sEHSehBHZUVAMJ7wekwVumWn6Sowq4JwjCzCVKQz2qSgzD1EV4Qm61W/0/*)";
 const psbt = "cHNid678AH0BAAAAATazRphM3Wknh...AAAAAAAACwAACCA=";
-const assetId = "rgb:TtFdiA7-obrjvvTbK-b8VrWD9ne-y9NyAPYha-qvSRrrh7s-aJ6Qs7";
-const recipientIds = "utxob:K91zpuP-ykQsfNC9x-xGtASYUuE-3Zxrzerps,utxob:9K12puP-ykSSfNC9x-xGtTTYUuE-3Zxrzerps";
-const result = sdk.acceptAsset(psbt, assetId, recipientIds);
+const assetId = "rgb:2uxU95k-eh4dzC1y3-tfM2Mka5T-eakP4Rh66-MZiA2vUe1-aMfWoH8";
+const recipientIds = "utxob:JGV9FPn-rcRxeC1...v-BF6bmZ,utxob:DxvnPGz-NKfPf...iD-fgpej8nu7-ggheVt";
+const result = sdk.acceptAsset(pubKey, psbt, assetId, recipientIds);
 ```
 
 #### Parameters
 
+- pubKey: string
 - psbt: string
-- assetId: string
-- recipientIds: string Multiple recipientId separated by commas
 
 #### Returns
 

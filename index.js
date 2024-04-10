@@ -2,9 +2,9 @@ const bitcoin = require("bitcoinjs-lib");
 const request = require("request-promise");
 
 class BiHelixWalletSDK {
-  constructor(provider, pubKey, network = "bitcoin") {
+  constructor(provider, address, network = "bitcoin") {
     this.provider = provider;
-    this.pubKey = pubKey;
+    this.address = address;
 
     if (network == "testnet") {
       this.network = bitcoin.networks.testnet;
@@ -27,15 +27,21 @@ class BiHelixWalletSDK {
     return result;
   }
 
-  async assetBalance(assetId) {
+  async assetBalance(assetId, pubKey = "") {
     if (!assetId) {
       return { code: 1, msg: "assetId is null!" };
     }
 
-    const result = await this.fetch("/api/get_asset_balance", {
-      pk: this.pubKey,
+    let params = {
+      address: this.address,
       asset_id: assetId,
-    });
+    };
+
+    if (pubKey) {
+      params["pk"] = pubKey;
+    }
+
+    const result = await this.fetch("/api/get_asset_balance", params);
 
     return result;
   }
@@ -45,17 +51,23 @@ class BiHelixWalletSDK {
       return { code: 1, msg: "assetId is null!" };
     }
 
-    const result = await this.fetch("/api/transaction_list", {
-      pk: this.pubKey,
+    let params = {
+      address: this.address,
       asset_id: assetId,
-    });
+    };
+
+    if (pubKey) {
+      params["pk"] = pubKey;
+    }
+
+    const result = await this.fetch("/api/transaction_list", params);
 
     return result;
   }
 
-  async receiveAsset(recPubKeys, assetId, amounts, assetTypes = "rgb20") {
-    if (!recPubKeys) {
-      return { code: 1, msg: "recPubKeys is null!" };
+  async createAssetInvoice(address, assetId, amounts, assetTypes = "rgb20") {
+    if (!address) {
+      return { code: 1, msg: "address is null!" };
     }
 
     if (!assetId) {
@@ -66,7 +78,7 @@ class BiHelixWalletSDK {
       return { code: 3, msg: "amounts is null!" };
     }
 
-    const recPubKeyList = recPubKeys.split(",");
+    const addressList = address.split(",");
     const amountList = amounts.split(",");
     for (let amount of amountList) {
       if (amount <= 0) {
@@ -90,9 +102,9 @@ class BiHelixWalletSDK {
           return { code: 5, msg: "assetId not found" };
         }
 
-        for (let pubKey of recPubKeyList) {
+        for (let address of addressList) {
           result = await this.checkAsset(
-            pubKey,
+            address,
             assetId,
             curNiaInfo.asset_iface,
             curNiaInfo.precision,
@@ -107,12 +119,11 @@ class BiHelixWalletSDK {
         }
 
         const backData = [];
-        for (let i = 0; i < recPubKeyList.length; i++) {
+        for (let i = 0; i < addressList.length; i++) {
           const invoice = await this.fetch("/api/receive_asset", {
-            pk: recPubKeyList[i],
+            address: addressList[i],
             asset_id: assetId,
             amount: parseFloat(amountList[i]),
-            sender: this.pubKey,
           });
 
           if (invoice.code != 0) {
@@ -135,17 +146,21 @@ class BiHelixWalletSDK {
     return result;
   }
 
-  async createAssetPsbt(assetId, amounts, invoices, donation = true) {
+  async createAssetPSBT(pubKey, assetId, amounts, invoices, donation = true) {
+    if (!pubKey) {
+      return { code: 1, msg: "pubKey is null!" };
+    }
+
     if (!assetId) {
-      return { code: 1, msg: "assetId is null!" };
+      return { code: 2, msg: "assetId is null!" };
     }
 
     if (!amounts) {
-      return { code: 2, msg: "amounts is null!" };
+      return { code: 3, msg: "amounts is null!" };
     }
 
     if (!invoices) {
-      return { code: 3, msg: "invoices is null!" };
+      return { code: 4, msg: "invoices is null!" };
     }
 
     const amountList = amounts.split(",");
@@ -174,7 +189,8 @@ class BiHelixWalletSDK {
     }
 
     const createPsbtRes = await this.fetch("/api/create_asset_psbt", {
-      pk: this.pubKey,
+      pk: pubKey,
+      address: address,
       asset_id: assetId,
       invoices: invoiceArr,
       donation: donation,
@@ -230,23 +246,27 @@ class BiHelixWalletSDK {
       data: { psbt: psbt.toBase64() },
     };
   }
+  async acceptAsset(pubKey, psbt, assetId, recipientIds) {
+    if (!pubKey) {
+      return { code: 1, msg: "pubKey is null!" };
+    }
 
-  async acceptAsset(psbt, assetId, recipientIds) {
     if (!psbt) {
-      return { code: 1, msg: "psbt is null!" };
+      return { code: 2, msg: "psbt is null!" };
     }
 
     if (!assetId) {
-      return { code: 2, msg: "assetId is null!" };
+      return { code: 3, msg: "assetId is null!" };
     }
 
     if (!recipientIds) {
-      return { code: 3, msg: "recipientIds is null!" };
+      return { code: 4, msg: "recipientIds is null!" };
     }
 
     const recipientIdList = recipientIds.split(",");
     const result = await this.fetch("/api/accept_asset", {
-      pk: this.pubKey,
+      pk: pubKey,
+      address: this.address,
       psbt,
       asset_id: assetId,
       recipient_ids: recipientIdList,
@@ -262,16 +282,16 @@ class BiHelixWalletSDK {
 
     const typsList = assetTypes.split(",");
     const result = await this.fetch("/api/asset_list", {
-      pk: this.pubKey,
+      address: this.address,
       asset_type: typsList,
     });
 
     return result;
   }
 
-  async checkAsset(recPubKey, assetId, schema, precision, name, ticker, issuedSupply) {
+  async checkAsset(address, assetId, schema, precision, name, ticker, issuedSupply) {
     const result = await this.fetch("/api/check_asset", {
-      pk: recPubKey,
+      address: address,
       asset_id: assetId,
       schema,
       precision: parseInt(precision),
