@@ -314,6 +314,21 @@ class BiHelixWalletSDK {
 
     return result;
   }
+
+  descriptor(privateKey) {
+    let network = this.network;
+    const keyPair = bitcoin.ECPair.fromWIF(privateKey, network);
+    const wpkh = bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network });
+    const pubKey = "wpkh(" + wpkh.pubkey.toString("hex") + ")";
+
+    return {
+      code: 0,
+      msg: null,
+      data: {
+        pubKey,
+      },
+    };
+  }
 }
 
 module.exports = BiHelixWalletSDK;

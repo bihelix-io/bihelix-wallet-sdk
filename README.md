@@ -16,13 +16,14 @@ The BiHelix Wallet SDK offers the following services:
 - [Usage](#Usage)
 - [Diagram](#Diagram)
 - [Methods](#Methods)
-  - [assetList](#assetList)
   - [assetBalance](#assetBalance)
+  - [assetList](#assetList)
   - [transactionList](#transactionList)
   - [createAssetInvoice](#createAssetInvoice)
   - [createAssetPSBT](#createAssetPSBT)
   - [signPSBT](#signPSBT)
   - [acceptAsset](#acceptAsset)
+  - [descriptor](#descriptor)
 
 ## Installation
 
@@ -45,10 +46,40 @@ const sdk = new SDK(provider, address);
 ## Diagram
 
 RGB20 token (multi) transfer process.
-
-![Transfer](./doc/diagram/transfer.jpg)
+![Transfer](./doc/diagram/transfer.png)
 
 ## Methods
+
+### assetBalance
+
+#### Description
+
+Get asset balance for specific asset id.
+
+#### Example
+
+```javascript
+const assetId = "rgb:TtFdiA7-obrjvvTbK-b8VrWD9ne-y9NyAPYha-qvSRrrh7s-aJ6Qs7";
+const result = sdk.assetBalance(assetId);
+```
+
+#### Parameters
+
+- assetId: string
+
+#### Returns
+
+```json
+{
+  "code": 0,
+  "msg": null,
+  "data": {
+    "settled": 10000,
+    "future": 10000,
+    "spendable": 10000
+  }
+}
+```
 
 ### assetList
 
@@ -91,37 +122,6 @@ const result = sdk.assetList(assetTypes);
         }
       }
     ]
-  }
-}
-```
-
-### assetBalance
-
-#### Description
-
-Get asset balance for specific asset id.
-
-#### Example
-
-```javascript
-const assetId = "rgb:TtFdiA7-obrjvvTbK-b8VrWD9ne-y9NyAPYha-qvSRrrh7s-aJ6Qs7";
-const result = sdk.assetBalance(assetId);
-```
-
-#### Parameters
-
-- assetId: string
-
-#### Returns
-
-```json
-{
-  "code": 0,
-  "msg": null,
-  "data": {
-    "settled": 10000,
-    "future": 10000,
-    "spendable": 10000
   }
 }
 ```
@@ -301,6 +301,35 @@ const result = sdk.acceptAsset(pubKey, psbt, assetId, recipientIds);
   "msg": "success",
   "data": {
     "txid": "2f66a276ce773d7ccf0ab4c86aaa645b56c2cc6998138b8895d558cb9fss320b"
+  }
+}
+```
+
+### descriptor
+
+#### Description
+
+outpub descriptor.
+
+#### Example
+
+```javascript
+const privateKey = "cRcKBdLUhJqvCR1E8sgKVc46Pygjtm6XXouCXo1ziokXjN1914DT";
+const result = sdk.descriptor(privateKey);
+```
+
+#### Parameters
+
+- privateKey: string
+
+#### Returns
+
+```json
+{
+  "code": 0,
+  "msg": null,
+  "data": {
+    "pubKey": "wpkh(038f740d3b28bef5d7e6135ef9bac56cefb2998cc0dafe289843f21faf16d04d0e)"
   }
 }
 ```
