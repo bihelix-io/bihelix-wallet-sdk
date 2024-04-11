@@ -46,7 +46,7 @@ const sdk = new SDK(provider, address);
 ## Diagram
 
 RGB20 token (multi) transfer process.
-![Transfer](./doc/diagram/transfer.png)
+![Transfer](./doc/diagram/transfer.jpg)
 
 ## Methods
 
@@ -208,12 +208,10 @@ create asset psbt.
 #### Example
 
 ```javascript
-const pubKey =
-  "wpkh([a8b0c10f/86/1/0/9]tpubDE89YTZ8zcnE7e74aY5ai4uHvqc5DeNp4cQJDWdmcXGyRhzkkq47sEHSehBHZUVAMJ7wekwVumWn6Sowq4JwjCzCVKQz2qSgzD1EV4Qm61W/0/*)";
+const pubKey = "wpkh([a8b0c10f/86/1/0/9]tpubDE89YTZ8zcnE7e74aY5ai4uHvqc5De...wekwVumWn6Sowq4JwjCzCVKQz2qSgzD1EV4Qm61W/0/*)";
 const assetId = "rgb:TtFdiA7-obrjvvTbK-b8VrWD9ne-y9NyAPYha-qvSRrrh7s-aJ6Qs7";
 const amounts = "1000,2000";
-const invoices =
-  "rgb:2uxU95k-eh4dzC1y3-...&endpoints=rpc://127.0.0.1/json-rpc,rgb:2uxU95...&endpoints=rpc://127.0.0.1/json-rpc";
+const invoices = "rgb:2uxU95k-eh4dzC1y3-...&endpoints=rpc://127.0.0.1/json-rpc,rgb:2uxU95...&endpoints=rpc://127.0.0.1/json-rpc";
 const result = sdk.createAssetPSBT(pubKey, assetId, amounts, invoices);
 ```
 
@@ -249,8 +247,7 @@ psbt sign.
 
 ```javascript
 const psbtStr = "cHNidP8BAH0BAAAAATazRphM3Wknh...AAAAAAAACwAAAAA=";
-const privKeys =
-  "cS1xrY3NBeQKvzFqee3b9VeEhCHDmrfE66Y5wpPoRjXfj2iHA6iU,cS177Y3NBeQKvzFqee3b9VeEhggDmrfE5SY5wpP77jXfj2iHA6iU";
+const privKeys = "cS1xrY3NBeQKvzFqe...rfE66Y5wpPoRjXfj2iHA6iU,cS177Y3NBeQKvzFq...fE5SY5wpP77jXfj2iHA6iU";
 const result = sdk.signPSBT(psbtStr, privKeys);
 ```
 
@@ -280,8 +277,7 @@ accecpt asset.
 #### Example
 
 ```javascript
-const pubKey =
-  "wpkh([a8b0c10f/86/1/0/9]tpubDE89YTZ8zcnE7e74aY5ai4uHvqc5DeNp4cQJDWdmcXGyRhzkkq47sEHSehBHZUVAMJ7wekwVumWn6Sowq4JwjCzCVKQz2qSgzD1EV4Qm61W/0/*)";
+const pubKey = "wpkh([a8b0c10f/86/1/0/9]tpubDE89YTZ8zcnE7e74aY5ai4uHvqc5D...umWn6Sowq4JwjCzCVKQz2qSgzD1EV4Qm61W/0/*)";
 const psbt = "cHNid678AH0BAAAAATazRphM3Wknh...AAAAAAAACwAACCA=";
 const assetId = "rgb:2uxU95k-eh4dzC1y3-tfM2Mka5T-eakP4Rh66-MZiA2vUe1-aMfWoH8";
 const recipientIds = "utxob:JGV9FPn-rcRxeC1...v-BF6bmZ,utxob:DxvnPGz-NKfPf...iD-fgpej8nu7-ggheVt";
