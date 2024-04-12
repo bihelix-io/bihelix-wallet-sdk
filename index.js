@@ -27,21 +27,15 @@ class BiHelixWalletSDK {
     return result;
   }
 
-  async assetBalance(assetId, pubKey = "") {
+  async assetBalance(assetId) {
     if (!assetId) {
       return { code: 1, msg: "assetId is null!" };
     }
 
-    let params = {
+    const result = await this.fetch("/api/get_asset_balance", {
       address: this.address,
       asset_id: assetId,
-    };
-
-    if (pubKey) {
-      params["pk"] = pubKey;
-    }
-
-    const result = await this.fetch("/api/get_asset_balance", params);
+    });
 
     return result;
   }
@@ -51,16 +45,10 @@ class BiHelixWalletSDK {
       return { code: 1, msg: "assetId is null!" };
     }
 
-    let params = {
+    const result = await this.fetch("/api/transaction_list", {
       address: this.address,
       asset_id: assetId,
-    };
-
-    if (pubKey) {
-      params["pk"] = pubKey;
-    }
-
-    const result = await this.fetch("/api/transaction_list", params);
+    });
 
     return result;
   }
@@ -136,7 +124,7 @@ class BiHelixWalletSDK {
         if (backData.length > 0) {
           return {
             code: 0,
-            msg: null,
+            msg: "success",
             data: backData,
           };
         }
@@ -208,7 +196,7 @@ class BiHelixWalletSDK {
 
       return {
         code: 0,
-        msg: null,
+        msg: "success",
         data: {
           psbtStr,
           recipientIds,
@@ -242,10 +230,11 @@ class BiHelixWalletSDK {
 
     return {
       code: 0,
-      msg: null,
+      msg: "success",
       data: { psbt: psbt.toBase64() },
     };
   }
+
   async acceptAsset(pubKey, psbt, assetId, recipientIds) {
     if (!pubKey) {
       return { code: 1, msg: "pubKey is null!" };
@@ -315,15 +304,47 @@ class BiHelixWalletSDK {
     return result;
   }
 
-  descriptor(privateKey) {
-    let network = this.network;
-    const keyPair = bitcoin.ECPair.fromWIF(privateKey, network);
-    const wpkh = bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network });
+  exportDescriptor(privateKey) {
+    const keyPair = bitcoin.ECPair.fromWIF(privateKey, this.network);
+    const wpkh = bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network: this.network });
     const pubKey = "wpkh(" + wpkh.pubkey.toString("hex") + ")";
 
     return {
       code: 0,
-      msg: null,
+      msg: "success",
+      data: {
+        pubKey,
+      },
+    };
+  }
+
+  exportFullDescriptor(mnemonic, path, password = "") {
+    if (!mnemonic) {
+      return { code: 1, msg: "mnemonic is null!" };
+    }
+
+    if (!path) {
+      return { code: 1, msg: "path is null!" };
+    }
+
+    let seed = "";
+    if (password) {
+      seed = bip39.mnemonicToSeedSync(mnemonic, password);
+    } else {
+      seed = bip39.mnemonicToSeedSync(mnemonic);
+    }
+
+    const root = bitcoin.bip32.fromSeed(seed, this.network);
+    const child = root.derivePath(path);
+    const fingerprint = root.fingerprint.toString("hex");
+    const publicKey = child.neutered().toBase58();
+    const newPath = path.replace(/[m]/g, fingerprint);
+    const replacePath = newPath.replace(/[']/g, "h");
+    const pubKey = "wpkh([" + replacePath + "]" + publicKey + "/0/*)";
+
+    return {
+      code: 0,
+      msg: "success",
       data: {
         pubKey,
       },
