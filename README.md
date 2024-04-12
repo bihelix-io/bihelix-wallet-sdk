@@ -34,7 +34,9 @@ npm install https://github.com/bihelix-io/bihelix-wallet-sdk
 
 ## Usage
 
-Initialize wallet instance.
+> When creating a new wallet address, RGB20 asset transfers currently only support the `m/86/1/0/9` **Non-hardened derivation**.
+
+Initialize wallet instance
 
 ```javascript
 // import sdk package
@@ -46,9 +48,9 @@ const sdk = new SDK(provider, address);
 
 ## Diagram
 
-RGB20 token (multi) transfer process.
+RGB20 token (multi) transfer process
 
-![Transfer](./doc/diagram/transfer.jpg)
+![Transfer](./doc/diagram/bid.png)
 
 ## Methods
 
@@ -56,7 +58,7 @@ RGB20 token (multi) transfer process.
 
 #### Description
 
-Get asset list.
+Get asset list
 
 #### Example
 
@@ -105,7 +107,7 @@ const result = sdk.assetList(assetTypes);
 
 #### Description
 
-Get asset balance for specific asset id.
+Get asset balance for specific asset id
 
 #### Example
 
@@ -119,6 +121,10 @@ const result = sdk.assetBalance(assetId);
 - assetId: string
 
 #### Returns
+
+- settled: confirmed amount
+- future: pending amount
+- spendable: available and spendable amount
 
 ```json
 {
@@ -136,7 +142,7 @@ const result = sdk.assetBalance(assetId);
 
 #### Description
 
-Fetch all history transations for specific asset id.
+Fetch all history transations for specific asset id
 
 #### Example
 
@@ -172,7 +178,7 @@ const result = sdk.transactionList(assetId);
 
 #### Description
 
-Create a transaction invoice form receiver.
+Create a transaction invoice form receiver
 
 #### Example
 
@@ -209,7 +215,7 @@ const result = sdk.createAssetInvoice(address, assetId, amounts);
 
 #### Description
 
-create asset psbt.
+create asset psbt
 
 #### Example
 
@@ -278,7 +284,7 @@ const result = sdk.signPSBT(psbtStr, privKeys);
 
 #### Description
 
-accecpt asset.
+accecpt asset
 
 #### Example
 
@@ -311,7 +317,7 @@ const result = sdk.acceptAsset(pubKey, psbt, assetId, recipientIds);
 
 #### Description
 
-export descriptor.
+export descriptor
 
 #### Example
 
@@ -340,7 +346,7 @@ const result = sdk.exportDescriptor(privateKey);
 
 #### Description
 
-export full descriptor.
+export full descriptor
 
 #### Example
 
@@ -364,7 +370,7 @@ const result = sdk.exportFullDescriptor(mnemonic, path, password);
   "code": 0,
   "msg": "success",
   "data": {
-    "pubKey": "wpkh([ce7e53f5/86h/1h/0h/9]tpubDFgEZRxAk7bi2xohFuZ9uSCnC4d...GtTzULg7vyUZkH3ve4218yj73xocR9zjxY1sRZNyHU4aQaKK4jywe/0/*)"
+    "pubKey": "wpkh([ce7e53f5/86/1/0/9]tpubDFgEZRxAk7bi2xohFuZ9uSCnC4d...GtTzULg7vyUZkH3ve4218yj73xocR9zjxY1sRZNyHU4aQaKK4jywe/0/*)"
   }
 }
 ```
