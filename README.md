@@ -34,7 +34,7 @@ npm install https://github.com/bihelix-io/bihelix-wallet-sdk
 
 ## Usage
 
-> When creating a new wallet address, RGB20 asset transfers currently only support the `m/86/1/0/9` **Non-hardened derivation**.
+> When creating a new wallet, it is recommended to use the derivation `m/86/1/0/9` (**Non-hardened derivation**) as suggested by the RGB official. Theoretically, other derivations are also supported, and currently there is no restriction.
 
 Initialize wallet instance
 
