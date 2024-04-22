@@ -24,6 +24,10 @@ class BiHelixWalletSDK {
       body,
     });
 
+    if (result.code == 0) {
+      result.msg = "success";
+    }
+
     return result;
   }
 
@@ -76,12 +80,12 @@ class BiHelixWalletSDK {
 
     let result = await this.assetList(assetTypes);
     if (result.code == 0) {
-      const nia = result.data.nia;
+      const nia = result.data.assets;
       if (nia.length > 0) {
         let curNiaInfo = "";
         for (let niaInfo of nia) {
-          if (niaInfo.asset_id == assetId) {
-            curNiaInfo = niaInfo;
+          if (niaInfo.asset.asset_id == assetId) {
+            curNiaInfo = niaInfo.asset;
             break;
           }
         }
@@ -234,6 +238,31 @@ class BiHelixWalletSDK {
       data: { psbt: psbt.toBase64() },
     };
   }
+
+  unsignedPSPB(utxoArray, address, amount) {
+    const psbt = new bitcoin.Psbt();
+    utxoArray.forEach((utxo) => {
+      psbt.addInput({
+        hash: utxo.hash,
+        index: utxo.index,
+        value: utxo.value,
+        nonWitnessUtxo: utxo.rawData,
+      });
+    });
+
+    psbt.addOutput({
+      address: address,
+      value: amount,
+    });
+
+    const unsignedPsbt = psbt.toBase64();
+    return {
+      code: 0,
+      msg: "success",
+      data: { psbt: unsignedPsbt },
+    };
+  }
+
   async acceptAsset(pubKey, psbt, assetId, recipientIds) {
     if (!pubKey) {
       return { code: 1, msg: "pubKey is null!" };
@@ -349,6 +378,17 @@ class BiHelixWalletSDK {
         pubKey,
       },
     };
+  }
+
+  async unspentList(address = "", settledOnly = true) {
+    address = address ? address : this.address;
+
+    const result = await this.fetch("/api/list_unspent", {
+      address,
+      settled_only: settledOnly,
+    });
+
+    return result;
   }
 }
 
