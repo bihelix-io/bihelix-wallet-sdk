@@ -22,9 +22,11 @@ The BiHelix Wallet SDK offers the following services:
   - [createAssetInvoice](#createAssetInvoice)
   - [createAssetPSBT](#createAssetPSBT)
   - [signPSBT](#signPSBT)
+  - [unsignedPSPB](#unsignedPSPB)
   - [acceptAsset](#acceptAsset)
   - [exportDescriptor](#exportDescriptor)
   - [exportFullDescriptor](#exportFullDescriptor)
+  - [unspentList](#unspentList)
 
 ## Installation
 
@@ -82,21 +84,33 @@ const result = sdk.assetList(assetTypes);
   "code": 0,
   "msg": "success",
   "data": {
-    "nia": [
+    "assets": [
       {
-        "asset_id": "rgb:28wpguQ-7wwJKcgFa-1d4Ewa4Ys-yToGwHm7E-6bYSKoEhX-rMugpkP",
-        "asset_iface": "RGB20",
-        "ticker": "YANG",
-        "name": "YANG",
-        "precision": 8,
-        "issued_supply": 10000,
-        "timestamp": 1712653848,
-        "added_at": 1712653848,
-        "balance": {
-          "settled": 10000,
-          "future": 5000,
-          "spendable": 5000
-        }
+        "asset": {
+          "asset_id": "rgb:28erwHp-KbsgGTLUk-9HVTBQ94W-9q5VFSB3s-44wFYLb98-kUPhLuF",
+          "asset_iface": "RGB20",
+          "ticker": "RGBTEST4",
+          "name": "RGBTest4",
+          "precision": 0,
+          "issued_supply": 1000000,
+          "timestamp": 1713322847,
+          "added_at": 1713322847,
+          "balance": {
+            "settled": 994000,
+            "future": 993500,
+            "spendable": 994000
+          }
+        },
+        "utxos": [
+          {
+            "outpoint": {
+              "txid": "0e881b54ff1c82070844655e24174d5f91132ecc9c446cd282b9bec206233527",
+              "vout": 1
+            },
+            "btc_amount": 15221,
+            "colorable": true
+          }
+        ]
       }
     ]
   }
@@ -280,6 +294,39 @@ const result = sdk.signPSBT(psbtStr, privKeys);
 }
 ```
 
+### unsignedPSPB
+
+#### Description
+
+unsigned psbt.
+
+#### Example
+
+```javascript
+const utxoArray = [utxo, utxo, utxo];
+const address = "tb1qfe4n5w37s29h8z2xvkn49596g3wemznkc3cmmx";
+const amount = 1000;
+const result = sdk.unsignedPSPB(utxoArray, address, amount);
+```
+
+#### Parameters
+
+- utxoArray: array
+- address: string
+- amount: int
+
+#### Returns
+
+```json
+{
+  "code": 0,
+  "msg": "success",
+  "data": {
+    "psbt": "cHNiuywRIV8EKkSjPxX2Ec6CXAc0mmh...sUh4RiBrqXbVAAAAACQAABBB0AAAAA"
+  }
+}
+```
+
 ### acceptAsset
 
 #### Description
@@ -371,6 +418,58 @@ const result = sdk.exportFullDescriptor(mnemonic, path, password);
   "msg": "success",
   "data": {
     "pubKey": "wpkh([ce7e53f5/86/1/0/9]tpubDFgEZRxAk7bi2xohFuZ9uSCnC4d...GtTzULg7vyUZkH3ve4218yj73xocR9zjxY1sRZNyHU4aQaKK4jywe/0/*)"
+  }
+}
+```
+
+### unspentList
+
+#### Description
+
+unspent list
+
+#### Example
+
+```javascript
+const address = "tb1qfe4n5w37s29h8z2xvkn49596g3wemznkc3cmmx";
+const result = sdk.unspentList(address);
+```
+
+#### Parameters
+
+- address: string
+
+#### Returns
+
+```json
+{
+  "code": 0,
+  "msg": "success",
+  "data": {
+    "unspents": [
+      {
+        "utxo": {
+          "outpoint": {
+            "txid": "186e0b6a19a593a0100adead6376a88dfca5e745c8c5a79d2b1239fa33d3815b",
+            "vout": 0
+          },
+          "btc_amount": 6000,
+          "colorable": true
+        },
+        "rgb_allocations": [
+          {
+            "asset_id": "rgb:28erwHp-KbsgGTLUk-9HVTBQ94W-9q5VFSB3s-44wFYLb98-kUPhLuF",
+            "amount": 1500,
+            "settled": true
+          },
+          {
+            "asset_id": "rgb:28erwHp-KbsgGTLUk-9HVTBQ94W-9q5VFSB3s-44wFYLb98-kUPhLuF",
+            "amount": 500,
+            "settled": true
+          }
+        ]
+      }
+    ]
   }
 }
 ```
