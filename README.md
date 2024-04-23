@@ -238,7 +238,8 @@ const pubKey = "wpkh([a8b0c10f/86/1/0/9]tpubDE89YTZ8zcnE7e74aY5ai4uHvqc5...ZUVAM
 const assetId = "rgb:TtFdiA7-obrjvvTbK-b8VrWD9ne-y9NyAPYha-qvSRrrh7s-aJ6Qs7";
 const amounts = "1000,2000";
 const invoices = "rgb:2uxU95k-eh4dzC1y3-...&endpoints=rpc://127.0.0.1/json-rpc,rgb:2uxU95...&endpoints=rpc://127.0.0.1/json-rpc";
-const result = sdk.createAssetPSBT(pubKey, assetId, amounts, invoices);
+const feeRate = 30;
+const result = sdk.createAssetPSBT(pubKey, assetId, amounts, invoices, feeRate);
 ```
 
 #### Parameters
@@ -247,6 +248,7 @@ const result = sdk.createAssetPSBT(pubKey, assetId, amounts, invoices);
 - assetId: string
 - amounts: string each amount to be send
 - invoices: string each invoice to be send
+- feeRate: float
 
 #### Returns
 

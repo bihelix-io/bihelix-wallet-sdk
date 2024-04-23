@@ -138,7 +138,7 @@ class BiHelixWalletSDK {
     return result;
   }
 
-  async createAssetPSBT(pubKey, assetId, amounts, invoices, donation = true) {
+  async createAssetPSBT(pubKey, assetId, amounts, invoices, freeRate = 30, donation = true) {
     if (!pubKey) {
       return { code: 1, msg: "pubKey is null!" };
     }
@@ -153,6 +153,11 @@ class BiHelixWalletSDK {
 
     if (!invoices) {
       return { code: 4, msg: "invoices is null!" };
+    }
+
+    freeRate = parseFloat(freeRate);
+    if (!freeRate) {
+      return { code: 5, msg: "feeRate cannot be less than 0!" };
     }
 
     const amountList = amounts.split(",");
@@ -186,6 +191,7 @@ class BiHelixWalletSDK {
       asset_id: assetId,
       invoices: invoiceArr,
       donation: donation,
+      free_rate: freeRate,
     });
 
     if (createPsbtRes.code == 0) {
