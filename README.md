@@ -1,6 +1,8 @@
 # BiHelix Wallet SDK
 
-The BiHelix Wallet SDK is an innovative wallet solution tailored for Web3 users and developers, providing them with secure and reliable support for native Bitcoin transactions, ensuring seamless digital asset management. Additionally, the BiHelix Wallet SDK integrates RGB protocol and Lightning Network (LN) technology, enabling developers to effortlessly integrate RGB protocol and Bitcoin payments into their applications with a very shallow learning curve. As the premier choice based on the native Bitcoin blockchain, the BiHelix Wallet SDK offers powerful and flexible tools, empowering you to easily take control of your Web3 assets.
+The BiHelix Wallet SDK is an innovative wallet solution tailored for Web3 users and developers, providing them with secure and reliable support for native Bitcoin transactions, ensuring seamless digital asset management.
+
+Additionally, the BiHelix Wallet SDK integrates RGB protocol and Lightning Network (LN) technology, enabling developers to effortlessly integrate RGB protocol and Bitcoin payments into their applications with a very shallow learning curve. As the premier choice based on the native Bitcoin blockchain, the BiHelix Wallet SDK offers powerful and flexible tools, empowering you to easily take control of your Web3 assets.
 
 The BiHelix Wallet SDK offers the following services:
 
@@ -16,6 +18,7 @@ The BiHelix Wallet SDK offers the following services:
 - [Usage](#Usage)
 - [Diagram](#Diagram)
 - [Methods](#Methods)
+  - [unspentList](#unspentList)
   - [assetList](#assetList)
   - [assetBalance](#assetBalance)
   - [transactionList](#transactionList)
@@ -26,7 +29,6 @@ The BiHelix Wallet SDK offers the following services:
   - [acceptAsset](#acceptAsset)
   - [exportDescriptor](#exportDescriptor)
   - [exportFullDescriptor](#exportFullDescriptor)
-  - [unspentList](#unspentList)
 
 ## Installation
 
@@ -36,7 +38,7 @@ npm install https://github.com/bihelix-io/bihelix-wallet-sdk
 
 ## Usage
 
-> When creating a new wallet, it is recommended to use the derivation `m/86/1/0/9` (**Non-hardened derivation**) as suggested by the RGB official. Theoretically, other derivations are also supported, and currently there is no restriction.
+> When creating a new wallet, it is recommended to use the derivation `m/86/1/0/9` (**Non-hardened derivation**) as suggested by the RGB official. Theoretically, other derivations are also supported for now, currently there is no restriction.
 
 Initialize wallet instance
 
@@ -56,6 +58,58 @@ RGB20 token (multi) transfer process
 
 ## Methods
 
+### unspentList
+
+#### Description
+
+Get unspent utxo list
+
+#### Example
+
+```javascript
+const address = "tb1qfe4n5w37s29h8z2xvkn49596g3wemznkc3cmmx";
+const result = await sdk.unspentList(address);
+```
+
+#### Parameters
+
+- address: string
+
+#### Returns
+
+```json
+{
+  "code": 0,
+  "msg": "success",
+  "data": {
+    "unspents": [
+      {
+        "utxo": {
+          "outpoint": {
+            "txid": "186e0b6a19a593a0100adead6376a88dfca5e745c8c5a79d2b1239fa33d3815b",
+            "vout": 0
+          },
+          "btc_amount": 6000,
+          "colorable": true
+        },
+        "rgb_allocations": [
+          {
+            "asset_id": "rgb:28erwHp-KbsgGTLUk-9HVTBQ94W-9q5VFSB3s-44wFYLb98-kUPhLuF",
+            "amount": 1500,
+            "settled": true
+          },
+          {
+            "asset_id": "rgb:28erwHp-KbsgGTLUk-9HVTBQ94W-9q5VFSB3s-44wFYLb98-kUPhLuF",
+            "amount": 500,
+            "settled": true
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
 ### assetList
 
 #### Description
@@ -66,7 +120,7 @@ Get asset list
 
 ```javascript
 const assetTypes = "rgb20";
-const result = sdk.assetList(assetTypes);
+const result = await sdk.assetList(assetTypes);
 ```
 
 #### Parameters
@@ -121,13 +175,13 @@ const result = sdk.assetList(assetTypes);
 
 #### Description
 
-Get asset balance for specific asset id
+Get asset balance by specific asset id
 
 #### Example
 
 ```javascript
 const assetId = "rgb:TtFdiA7-obrjvvTbK-b8VrWD9ne-y9NyAPYha-qvSRrrh7s-aJ6Qs7";
-const result = sdk.assetBalance(assetId);
+const result = await sdk.assetBalance(assetId);
 ```
 
 #### Parameters
@@ -156,13 +210,13 @@ const result = sdk.assetBalance(assetId);
 
 #### Description
 
-Fetch all history transations for specific asset id
+Fetch all history transations by specific asset id
 
 #### Example
 
 ```javascript
 const assetId = "rgb:TtFdiA7-obrjvvTbK-b8VrWD9ne-y9NyAPYha-qvSRrrh7s-aJ6Qs7";
-const result = sdk.transactionList(assetId);
+const result = await sdk.transactionList(assetId);
 ```
 
 #### Parameters
@@ -200,7 +254,7 @@ Create a transaction invoice form receiver
 const address = "tb1qqek00zlz2eea4r9jkv2hzfss4l0uqayk485xr7,tb1qskr93hdje2pcnp6w558zxxp6wenvc7emvdm567";
 const assetId = "rgb:TtFdiA7-obrjvvTbK-b8VrWD9ne-y9NyAPYha-qvSRrrh7s-aJ6Qs7";
 const amounts = "1000,2000";
-const result = sdk.createAssetInvoice(address, assetId, amounts);
+const result = await sdk.createAssetInvoice(address, assetId, amounts);
 ```
 
 #### Parameters
@@ -229,7 +283,7 @@ const result = sdk.createAssetInvoice(address, assetId, amounts);
 
 #### Description
 
-create asset psbt
+Create asset psbt
 
 #### Example
 
@@ -239,7 +293,7 @@ const assetId = "rgb:TtFdiA7-obrjvvTbK-b8VrWD9ne-y9NyAPYha-qvSRrrh7s-aJ6Qs7";
 const amounts = "1000,2000";
 const invoices = "rgb:2uxU95k-eh4dzC1y3-...&endpoints=rpc://127.0.0.1/json-rpc,rgb:2uxU95...&endpoints=rpc://127.0.0.1/json-rpc";
 const feeRate = 30;
-const result = sdk.createAssetPSBT(pubKey, assetId, amounts, invoices, feeRate);
+const result = await sdk.createAssetPSBT(pubKey, assetId, amounts, invoices, feeRate);
 ```
 
 #### Parameters
@@ -269,7 +323,7 @@ const result = sdk.createAssetPSBT(pubKey, assetId, amounts, invoices, feeRate);
 
 #### Description
 
-psbt sign.
+Sign psbt by sender
 
 #### Example
 
@@ -300,7 +354,7 @@ const result = sdk.signPSBT(psbtStr, privKeys);
 
 #### Description
 
-unsigned psbt.
+Get unsigned psbt data
 
 #### Example
 
@@ -333,7 +387,7 @@ const result = sdk.unsignedPSPB(utxoArray, address, amount);
 
 #### Description
 
-accecpt asset
+Accecpt asset to finish the transfer
 
 #### Example
 
@@ -342,7 +396,7 @@ const pubKey = "wpkh([a8b0c10f/86/1/0/9]tpubDE89YTZ8zcnE7e74aY5ai4uHvqc5...AMJ7w
 const psbt = "cHNid678AH0BAAAAATazRphM3Wknh...AAAAAAAACwAACCA=";
 const assetId = "rgb:2uxU95k-eh4dzC1y3-tfM2Mka5T-eakP4Rh66-MZiA2vUe1-aMfWoH8";
 const recipientIds = "utxob:JGV9FPn-rcRxeC1...v-BF6bmZ,utxob:DxvnPGz-NKfPf...iD-fgpej8nu7-ggheVt";
-const result = sdk.acceptAsset(pubKey, psbt, assetId, recipientIds);
+const result = await sdk.acceptAsset(pubKey, psbt, assetId, recipientIds);
 ```
 
 #### Parameters
@@ -366,7 +420,7 @@ const result = sdk.acceptAsset(pubKey, psbt, assetId, recipientIds);
 
 #### Description
 
-export descriptor
+Export descriptor public key
 
 #### Example
 
@@ -395,7 +449,7 @@ const result = sdk.exportDescriptor(privateKey);
 
 #### Description
 
-export full descriptor
+Export full descriptor public key
 
 #### Example
 
@@ -420,58 +474,6 @@ const result = sdk.exportFullDescriptor(mnemonic, path, password);
   "msg": "success",
   "data": {
     "pubKey": "wpkh([ce7e53f5/86/1/0/9]tpubDFgEZRxAk7bi2xohFuZ9uSCnC4d...GtTzULg7vyUZkH3ve4218yj73xocR9zjxY1sRZNyHU4aQaKK4jywe/0/*)"
-  }
-}
-```
-
-### unspentList
-
-#### Description
-
-unspent list
-
-#### Example
-
-```javascript
-const address = "tb1qfe4n5w37s29h8z2xvkn49596g3wemznkc3cmmx";
-const result = sdk.unspentList(address);
-```
-
-#### Parameters
-
-- address: string
-
-#### Returns
-
-```json
-{
-  "code": 0,
-  "msg": "success",
-  "data": {
-    "unspents": [
-      {
-        "utxo": {
-          "outpoint": {
-            "txid": "186e0b6a19a593a0100adead6376a88dfca5e745c8c5a79d2b1239fa33d3815b",
-            "vout": 0
-          },
-          "btc_amount": 6000,
-          "colorable": true
-        },
-        "rgb_allocations": [
-          {
-            "asset_id": "rgb:28erwHp-KbsgGTLUk-9HVTBQ94W-9q5VFSB3s-44wFYLb98-kUPhLuF",
-            "amount": 1500,
-            "settled": true
-          },
-          {
-            "asset_id": "rgb:28erwHp-KbsgGTLUk-9HVTBQ94W-9q5VFSB3s-44wFYLb98-kUPhLuF",
-            "amount": 500,
-            "settled": true
-          }
-        ]
-      }
-    ]
   }
 }
 ```
