@@ -120,7 +120,7 @@ Get issued asset list
 #### Example
 
 ```javascript
-const result = sdk.assetRegistry();
+const result = await sdk.assetRegistry();
 ```
 
 #### Parameters
