@@ -1,5 +1,6 @@
 const bitcoin = require("bitcoinjs-lib");
 const request = require("request-promise");
+const bip39 = require("bip39");
 
 /**
  * Represents the BiHelixWalletSDK class.
@@ -495,6 +496,26 @@ class BiHelixWalletSDK {
       address,
       settled_only: settledOnly,
     });
+
+    return result;
+  }
+
+  /**
+   * Retrieves the list of registry assets.
+   * @returns {Promise<object>} The list of registry assets.
+   */
+  async assetRegistry() {
+    const result = await request({
+      url: this.provider + "/api/get_all_assets",
+      method: "GET",
+      json: true,
+      headers: { "content-type": "application/json" },
+      body: {},
+    });
+
+    if (result.code == 0) {
+      result.msg = "success";
+    }
 
     return result;
   }

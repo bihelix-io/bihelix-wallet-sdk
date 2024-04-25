@@ -29,6 +29,7 @@ The BiHelix Wallet SDK offers the following services:
   - [acceptAsset](#acceptAsset)
   - [exportDescriptor](#exportDescriptor)
   - [exportFullDescriptor](#exportFullDescriptor)
+  - [assetRegistry](#assetRegistry)
 
 ## Installation
 
@@ -475,5 +476,39 @@ const result = sdk.exportFullDescriptor(mnemonic, path, password);
   "data": {
     "pubKey": "wpkh([ce7e53f5/86/1/0/9]tpubDFgEZRxAk7bi2xohFuZ9uSCnC4d...GtTzULg7vyUZkH3ve4218yj73xocR9zjxY1sRZNyHU4aQaKK4jywe/0/*)"
   }
+}
+```
+
+### assetRegistry
+
+#### Description
+
+asset registry
+
+#### Example
+
+```javascript
+const result = sdk.assetRegistry();
+```
+
+#### Parameters
+
+#### Returns
+
+```json
+{
+  "code": 0,
+  "msg": "success",
+  "data": [
+    {
+      "asset_owner": "tb1qrspdu96a9s2qx39a4mqpzf4guxz7l3w7t8h6dv",
+      "asset_id": "rgb:2DFQNGC-f29tozN8w-oj222Sapy-M985R8dYA-cQD4VjLYB-zWfvp54",
+      "asset_schema": "RGB20",
+      "issued_supply": "1000000",
+      "asset_ticker": "RGBTEST4",
+      "asset_name": "RGBTest4",
+      "asset_precision": 0
+    }
+  ]
 }
 ```
