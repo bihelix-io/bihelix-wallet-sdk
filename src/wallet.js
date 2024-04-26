@@ -178,7 +178,7 @@ class BiHelixWalletSDK {
    * @param {string} assetId - The ID of the asset.
    * @param {string} amounts - The amounts to send.
    * @param {string} invoices - The invoices.
-   * @param {number} [feeRate=30] - The free rate.
+   * @param {number} [feeRate=30] - The fee rate.
    * @param {boolean} [donation=true] - Whether to include a donation.
    * @returns {Promise<object>} The created asset PSBT.
    */
