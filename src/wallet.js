@@ -178,11 +178,11 @@ class BiHelixWalletSDK {
    * @param {string} assetId - The ID of the asset.
    * @param {string} amounts - The amounts to send.
    * @param {string} invoices - The invoices.
-   * @param {number} [freeRate=30] - The free rate.
+   * @param {number} [feeRate=30] - The free rate.
    * @param {boolean} [donation=true] - Whether to include a donation.
    * @returns {Promise<object>} The created asset PSBT.
    */
-  async createAssetPSBT(pubKey, assetId, amounts, invoices, freeRate = 30, donation = true) {
+  async createAssetPSBT(pubKey, assetId, amounts, invoices, feeRate = 30, donation = true) {
     if (!pubKey) {
       return { code: 1, msg: "pubKey is null!" };
     }
@@ -199,8 +199,8 @@ class BiHelixWalletSDK {
       return { code: 4, msg: "invoices is null!" };
     }
 
-    freeRate = parseFloat(freeRate);
-    if (!freeRate) {
+    feeRate = parseFloat(feeRate);
+    if (!feeRate) {
       return { code: 5, msg: "feeRate cannot be less than 0!" };
     }
 
@@ -235,7 +235,7 @@ class BiHelixWalletSDK {
       asset_id: assetId,
       invoices: invoiceArr,
       donation: donation,
-      free_rate: freeRate,
+      fee_rate: feeRate,
     });
 
     if (createPsbtRes.code == 0) {
