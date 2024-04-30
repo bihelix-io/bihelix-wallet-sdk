@@ -251,12 +251,16 @@ Fetch all history transations by specific asset id
 
 ```javascript
 const assetId = "rgb:TtFdiA7-obrjvvTbK-b8VrWD9ne-y9NyAPYha-qvSRrrh7s-aJ6Qs7";
-const result = await sdk.transactionList(assetId);
+const pageSize = 10;
+const pageNo = 1;
+const result = await sdk.transactionList(assetId, pageSize, pageNo);
 ```
 
 #### Parameters
 
 - assetId: string
+- pageSize: int
+- pageNo: int
 
 #### Returns
 
@@ -267,11 +271,29 @@ const result = await sdk.transactionList(assetId);
   "data": [
     {
       "idx": 1,
-      "created_at": 1711703957,
-      "updated_at": 1711703957,
+      "batch_transfer_idx": 1,
+      "created_at": 1714371014,
+      "updated_at": 1714374494,
       "status": "Settled",
-      "amount": 100000,
-      "kind": "Issuance"
+      "amount": 100,
+      "kind": "ReceiveBlind",
+      "sender": "tb1q86kuzty6rqez8v6mkzwqsmwfgem8jvz8te8zps",
+      "receiver": "tb1qs6vjt8c3lj6rtp2wpq5y55mxmu256837nh6cts",
+      "txid": "72a80132c1a69357f86f94c74fa4d81d3611b3a6e292afaf8e3e831b8124a2a8",
+      "recipient_id": "tb:utxob:w74XPb8-gijKLk327-bKtvB38rF-Dr7vVNGo8-bgp16k4Dq-aWPaVf",
+      "receive_utxo": {
+        "txid": "a76c3ea1e86c514dbfc7249bf905bd6ff6deedbb958eb636534ca29af547d63b",
+        "vout": 3
+      },
+      "change_utxo": null,
+      "expiration": 1714374614,
+      "transport_endpoints": [
+        {
+          "endpoint": "http://10.192.9.162:3000/json-rpc",
+          "transport_type": "JsonRpc",
+          "used": true
+        }
+      ]
     }
   ]
 }

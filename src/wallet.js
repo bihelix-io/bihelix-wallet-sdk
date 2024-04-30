@@ -68,9 +68,11 @@ class BiHelixWalletSDK {
   /**
    * Retrieves the transaction list of a specific asset.
    * @param {string} assetId - The ID of the asset.
+   * @param {int} pageSize - The page size.
+   * @param {int} pageNo - The page number.
    * @returns {Promise<object>} The transaction list.
    */
-  async transactionList(assetId) {
+  async transactionList(assetId, pageSize = 10, pageNo = 1) {
     if (!assetId) {
       return { code: 1, msg: "assetId is null!" };
     }
@@ -78,6 +80,8 @@ class BiHelixWalletSDK {
     const result = await this.fetch("/api/transaction_list", {
       address: this.address,
       asset_id: assetId,
+      page_size: pageSize,
+      page_no: pageNo,
     });
 
     return result;
