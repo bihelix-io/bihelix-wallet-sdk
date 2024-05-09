@@ -1,5 +1,6 @@
 const bitcoin = require("bitcoinjs-lib");
 const request = require("request-promise");
+const bs58check = require("bs58check");
 const bip39 = require("bip39");
 
 /**
@@ -133,15 +134,7 @@ class BiHelixWalletSDK {
         }
 
         for (let address of addressList) {
-          result = await this.checkAsset(
-            address,
-            assetId,
-            curNiaInfo.asset_iface,
-            curNiaInfo.precision,
-            curNiaInfo.name,
-            curNiaInfo.ticker,
-            curNiaInfo.issued_supply
-          );
+          result = await this.checkAsset(address, assetId, curNiaInfo.asset_iface, curNiaInfo.precision, curNiaInfo.name, curNiaInfo.ticker, curNiaInfo.issued_supply);
 
           if (result.code != 0) {
             return result;
@@ -435,7 +428,10 @@ class BiHelixWalletSDK {
    */
   exportDescriptor(privateKey) {
     const keyPair = bitcoin.ECPair.fromWIF(privateKey, this.network);
-    const wpkh = bitcoin.payments.p2wpkh({ pubkey: keyPair.publicKey, network: this.network });
+    const wpkh = bitcoin.payments.p2wpkh({
+      pubkey: keyPair.publicKey,
+      network: this.network,
+    });
     const pubKey = "wpkh(" + wpkh.pubkey.toString("hex") + ")";
 
     return {
@@ -477,6 +473,30 @@ class BiHelixWalletSDK {
     const newPath = path.replace(/[m]/g, fingerprint);
     const replacePath = newPath.replace(/[']/g, "h");
     const pubKey = "wpkh([" + replacePath + "]" + publicKey + "/0/*)";
+
+    return {
+      code: 0,
+      msg: "success",
+      data: {
+        pubKey,
+      },
+    };
+  }
+
+  /**
+   * Convert extended publickey
+   * @param {string} vpub - The v public key.
+   * @returns {object} Converted public key.
+   */
+  convertExtendPubKey(vpub) {
+    const decimalNumber = this.network.bip32.public;
+    const hexNumber = decimalNumber.toString(16);
+    const paddedHexNumber = hexNumber.padStart(8, "0");
+    const tpubPrefix = Buffer.from(paddedHexNumber, "hex").toString("hex");
+    var data = bs58check.decode(vpub);
+    data = data.slice(4);
+    data = Buffer.concat([Buffer.from(tpubPrefix, "hex"), data]);
+    const pubKey = bs58check.encode(data);
 
     return {
       code: 0,

@@ -26,6 +26,7 @@
     "node-gyp": "^10.0.1",
     "request": "^2.88.2",
     "request-promise": "^4.2.6",
-    "tiny-secp256k1": "latest"
+    "tiny-secp256k1": "latest",
+    "bs58check": "^3.0.1"
   }
 }

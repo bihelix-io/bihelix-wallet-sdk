@@ -30,6 +30,7 @@ The BiHelix Wallet SDK offers the following services:
   - [acceptAsset](#acceptAsset)
   - [exportDescriptor](#exportDescriptor)
   - [exportFullDescriptor](#exportFullDescriptor)
+  - [convertExtendPubKey](#convertExtendPubKey)
 
 ## Installation
 
@@ -531,6 +532,35 @@ const result = sdk.exportFullDescriptor(mnemonic, path, password);
   "msg": "success",
   "data": {
     "pubKey": "wpkh([ce7e53f5/86/1/0/9]tpubDFgEZRxAk7bi2xohFuZ9uSCnC4d...GtTzULg7vyUZkH3ve4218yj73xocR9zjxY1sRZNyHU4aQaKK4jywe/0/*)"
+  }
+}
+```
+
+### convertExtendPubKey
+
+#### Description
+
+Convert extended publickey
+
+#### Example
+
+```javascript
+const vpub = "vpub5a5zQtPcyyjp9FXyTdXF5yNvFnDXM1tkgkmZJAnrWbmKaDhbBHsuUfJLNFBL3AE5k7MRYEEWTLyddh6CzodgFJAhh3GqBV9UroHXwtNVW8g";
+const result = sdk.convertExtendPubKey(vpub);
+```
+
+#### Parameters
+
+- vpub: string
+
+#### Returns
+
+```json
+{
+  "code": 0,
+  "msg": "success",
+  "data": {
+    "pubKey": "tpubDE89YTZ8zcnE7e74aY5ai4uHvqc5DeNp4cQJDWdmcXGyRhzkkq47sEHSehBHZUVAMJ7wekwVumWn6Sowq4JwjCzCVKQz2qSgzD1EV4Qm61W"
   }
 }
 ```
