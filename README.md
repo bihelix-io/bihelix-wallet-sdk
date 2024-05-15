@@ -31,6 +31,8 @@ The BiHelix Wallet SDK offers the following services:
   - [exportDescriptor](#exportDescriptor)
   - [exportFullDescriptor](#exportFullDescriptor)
   - [convertExtendPubKey](#convertExtendPubKey)
+  - [failTransfer](#failTransfer)
+  - [delTransfer](#delTransfer)
 
 ## Installation
 
@@ -562,5 +564,63 @@ const result = sdk.convertExtendPubKey(vpub);
   "data": {
     "pubKey": "tpubDE89YTZ8zcnE7e74aY5ai4uHvqc5DeNp4cQJDWdmcXGyRhzkkq47sEHSehBHZUVAMJ7wekwVumWn6Sowq4JwjCzCVKQz2qSgzD1EV4Qm61W"
   }
+}
+```
+
+### failTransfer
+
+#### Description
+
+Check for expired transactions and set status to 'failed'
+
+#### Example
+
+```javascript
+const idx = 0;
+const assetOnly = false;
+const result = sdk.failTransfer(idx, assetOnly);
+```
+
+#### Parameters
+
+- idx: int
+- assetOnly: boolean
+
+#### Returns
+
+```json
+{
+  "code": 0,
+  "msg": "success",
+  "data": false
+}
+```
+
+### delTransfer
+
+#### Description
+
+Delete transactions with the status set to 'failed'
+
+#### Example
+
+```javascript
+const idx = 0;
+const assetOnly = false;
+const result = sdk.delTransfer(idx, assetOnly);
+```
+
+#### Parameters
+
+- idx: int
+- assetOnly: boolean
+
+#### Returns
+
+```json
+{
+  "code": 0,
+  "msg": "success",
+  "data": false
 }
 ```

@@ -543,6 +543,36 @@ class BiHelixWalletSDK {
 
     return result;
   }
+
+  async failTransfer(idx = -1, assetOnly = false) {
+    const params = {
+      address: this.address,
+      asset_only: assetOnly,
+    };
+
+    if (idx != -1) {
+      params["idx"] = idx;
+    }
+
+    const result = await this.fetch("/api/fail_transfer", params);
+
+    return result;
+  }
+
+  async delTransfer(idx = -1, assetOnly = false) {
+    const params = {
+      address: this.address,
+      asset_only: assetOnly,
+    };
+
+    if (idx != -1) {
+      params["idx"] = idx;
+    }
+
+    const result = await this.fetch("/api/del_transfer", params);
+
+    return result;
+  }
 }
 
 module.exports = BiHelixWalletSDK;
