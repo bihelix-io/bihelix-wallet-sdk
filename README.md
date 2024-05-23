@@ -25,6 +25,7 @@ The BiHelix Wallet SDK offers the following services:
   - [transactionList](#transactionList)
   - [createAssetInvoice](#createAssetInvoice)
   - [createAssetPSBT](#createAssetPSBT)
+  - [createCSVPSBT](#createCSVPSBT)
   - [signPSBT](#signPSBT)
   - [unsignedPSPB](#unsignedPSPB)
   - [acceptAsset](#acceptAsset)
@@ -375,6 +376,39 @@ const result = await sdk.createAssetPSBT(pubKey, assetId, amounts, invoices, fee
     "recipientIds": "utxob:JGV9FPn-rcRxeC1...v-BF6bmZ,utxob:DxvnPGz-NKfPf...iD-fgpej8nu7-ggheVt",
     "pathList": ["m/86/1/0/9/0/2", "m/86/1/0/9/0/6"],
     "assetId": "rgb:2uxU95k-eh4dzC1y3-tfM2Mka5T-eakP4Rh66-MZiA2vUe1-aMfWoH8"
+  }
+}
+```
+
+### createCSVPSBT
+
+#### Description
+
+Create customize csv data
+
+#### Example
+
+```javascript
+const pk = "wpkh(03d044eefd0699c307a5f2aaf30d7a5434e9ca22173b42497888fc43e439d17cfc)";
+const commitment = "abdetg3stssselisgitabegihpimklos";
+const feeRate = 60.0;
+const result = await sdk.createCSVPSBT(pk, commitment, feeRate);
+```
+
+#### Parameters
+
+- pk: string
+- commitment: string
+- feeRate: float
+
+#### Returns
+
+```json
+{
+  "code": 0,
+  "msg": "success",
+  "data": {
+    "psbt": "cHNidP8BAH0BAAAAARK2XXQGzxi8RNXyjcRsewWB......sAs4yJssEHALeFwAI/AVPUFJFVAEgYWJkZXRnM3N0c3NzZWxpc2dpdGFiZWdpaHBpbWtsb3MA"
   }
 }
 ```

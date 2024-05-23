@@ -573,6 +573,26 @@ class BiHelixWalletSDK {
 
     return result;
   }
+
+  async createCSVPSBT(pk, commitment, feeRate = 30) {
+    if (!pk) {
+      return { code: 1, msg: "pk is null!" };
+    }
+
+    if (commitment.length != 32) {
+      return { code: 1, msg: "commitment length must be 32!" };
+    }
+
+    const params = {
+      pk,
+      commitment,
+      fee_rate: parseFloat(feeRate),
+    };
+
+    const result = await this.fetch("/api/build_csv_psbt", params);
+
+    return result;
+  }
 }
 
 module.exports = BiHelixWalletSDK;
