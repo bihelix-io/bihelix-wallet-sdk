@@ -6,7 +6,7 @@ Additionally, the BiHelix Wallet SDK integrates RGB protocol and Lightning Netwo
 
 The BiHelix Wallet SDK offers the following services:
 
-- RGB Asset Protocol (currently supporting RGB20, with upcoming support for RGB21, RGB22, and more)
+- RGB Asset Protocol (currently supporting RGB20, with upcoming support for RGB21 and more)
 - Client-side PSBT signer
 - Multi-transfer supported
 - Boost transfer supported with BiHelix BID technology
@@ -28,7 +28,8 @@ The BiHelix Wallet SDK offers the following services:
   - [createCSVPSBT](#createCSVPSBT)
   - [signPSBT](#signPSBT)
   - [unsignedPSPB](#unsignedPSPB)
-  - [acceptAsset](#acceptAsset)
+  - [createMultiAssetPSBT](#createMultiAssetPSBT)
+  - [acceptMultiAsset](#acceptMultiAsset)
   - [exportDescriptor](#exportDescriptor)
   - [exportFullDescriptor](#exportFullDescriptor)
   - [convertExtendPubKey](#convertExtendPubKey)
@@ -293,7 +294,7 @@ const result = await sdk.transactionList(assetId, pageSize, pageNo);
       "expiration": 1714374614,
       "transport_endpoints": [
         {
-          "endpoint": "http://10.192.9.162:3000/json-rpc",
+          "endpoint": "http://127.0.0.0:8080/json-rpc",
           "transport_type": "JsonRpc",
           "used": true
         }
@@ -477,26 +478,35 @@ const result = sdk.unsignedPSPB(utxoArray, address, amount);
 }
 ```
 
-### acceptAsset
+### createMultiAssetPSBT
 
 #### Description
 
-Accecpt asset to finish the transfer
+Create multiple assets PSBT
 
 #### Example
 
 ```javascript
-const pubKey = "wpkh([a8b0c10f/86/1/0/9]tpubDE89YTZ8zcnE7e74aY5ai4uHvqc5...AMJ7wekwVumWn6Sowq4JwjCzCVKQz2qSgzD1EV4Qm61W/0/*)";
-const psbt = "cHNid678AH0BAAAAATazRphM3Wknh...AAAAAAAACwAACCA=";
-const assetId = "rgb:2uxU95k-eh4dzC1y3-tfM2Mka5T-eakP4Rh66-MZiA2vUe1-aMfWoH8";
-const recipientIds = "utxob:JGV9FPn-rcRxeC1...v-BF6bmZ,utxob:DxvnPGz-NKfPf...iD-fgpej8nu7-ggheVt";
-const result = await sdk.acceptAsset(pubKey, psbt, assetId, recipientIds);
+const pubKey = "wpkh(02c1d6ed8034acd0b8b69d3ss49b0602d90250673e998e54b0a8b89581764d7aa5)";
+const invoices = [
+  {
+    asset_id: "rgb:2ZyMWs7-3pbiFDwFu-b6ir4LNDT-wamPbBT5B-jXyeRkDnV-BrjP3fr",
+    invoice: "rgb:2ZyMWs7-3pbiFDwFu-b6ir4LNDT-wamPbBT5B-jXyeRkDnV-...points=rpc://127.0.0.1:8080/json-rpc",
+    recipient_id: "tb:utxob:2bVJDP7-MTAZsTEX6-ksAn2udWY-us1yHuxtG-JJRoCB9rF-Bobnqp",
+    amount: 5000,
+  },
+];
+const feeRate = 120;
+const donation = true;
+const result = sdk.createMultiAssetPSBT(pubKey, invoices, feeRate, donation);
 ```
 
 #### Parameters
 
 - pubKey: string
-- psbt: string
+- invoices: array
+- feeRate: float
+- donation: boolean
 
 #### Returns
 
@@ -505,7 +515,43 @@ const result = await sdk.acceptAsset(pubKey, psbt, assetId, recipientIds);
   "code": 0,
   "msg": "success",
   "data": {
-    "txid": "2f66a276ce773d7ccf0ab4c86aaa645b56c2cc6998138b8895d558cb9fss320b"
+    "psbt": "03af972eea......8c7766399e59d0",
+    "txid": "a03af972eea88ee0a8aef0a0bad8c7766399e59d029d443f2ee1c8e189d6e1ab"
+  }
+}
+```
+
+### acceptMultiAsset
+
+#### Description
+
+Accept multiple assets
+
+#### Example
+
+```javascript
+const pubKey = "wpkh(02c1d6ed8034acd0b8b69d34c49ss602d90250673e998e54b0a8b89581764d7aa5)";
+const psbt = "9+u5IdAZLZ2iSMMSr//8AA......AABAKUMIbtyg ";
+const recipientIds = "tb:utxob:2XjRbuR-tZ...rZfG5-JaAPnsxHc-eBss1yG,tb:utxob:2XjRbuR-tZn...3CsE-JaAPnsxHc-eBss1yG";
+const assetIds = "rgb:2ZyMWs...b6ir4LNDT-wamPbBDnV-BrjP3fr,rgb:2ZyMWs7-3p...NDT-wamPbBT5B-jXyeRkDnV-BrjP3fr";
+const result = sdk.acceptMultiAsset(pubKey, psbt, recipientIds, assetIds);
+```
+
+#### Parameters
+
+- pubKey: string
+- psbt: string
+- recipientIds: string
+- assetIds: string
+
+#### Returns
+
+```json
+{
+  "code": 0,
+  "msg": "success",
+  "data": {
+    "txid": "a03af972eea88ee0a8aef0a0bad8c7766399e59d029d443f2ee1c8e189d6e1ab"
   }
 }
 ```
@@ -613,35 +659,6 @@ Check for expired transactions and set status to 'failed'
 const idx = 0;
 const assetOnly = false;
 const result = sdk.failTransfer(idx, assetOnly);
-```
-
-#### Parameters
-
-- idx: int
-- assetOnly: boolean
-
-#### Returns
-
-```json
-{
-  "code": 0,
-  "msg": "success",
-  "data": false
-}
-```
-
-### delTransfer
-
-#### Description
-
-Delete transactions with the status set to 'failed'
-
-#### Example
-
-```javascript
-const idx = 0;
-const assetOnly = false;
-const result = sdk.delTransfer(idx, assetOnly);
 ```
 
 #### Parameters

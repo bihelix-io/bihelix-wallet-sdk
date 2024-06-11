@@ -150,7 +150,7 @@ class BiHelixWalletSDK {
           });
 
           if (invoice.code != 0) {
-            return invoices;
+            return invoice;
           } else {
             backData.push(invoice.data);
           }
@@ -321,43 +321,6 @@ class BiHelixWalletSDK {
       msg: "success",
       data: { psbt: unsignedPsbt },
     };
-  }
-
-  /**
-   * Accepts an asset.
-   * @param {string} pubKey - The public key.
-   * @param {string} psbt - The PSBT.
-   * @param {string} assetId - The ID of the asset.
-   * @param {string} recipientIds - The recipient IDs.
-   * @returns {Promise<object>} The result of accepting the asset.
-   */
-  async acceptAsset(pubKey, psbt, assetId, recipientIds) {
-    if (!pubKey) {
-      return { code: 1, msg: "pubKey is null!" };
-    }
-
-    if (!psbt) {
-      return { code: 2, msg: "psbt is null!" };
-    }
-
-    if (!assetId) {
-      return { code: 3, msg: "assetId is null!" };
-    }
-
-    if (!recipientIds) {
-      return { code: 4, msg: "recipientIds is null!" };
-    }
-
-    const recipientIdList = recipientIds.split(",");
-    const result = await this.fetch("/api/accept_asset", {
-      pk: pubKey,
-      address: this.address,
-      psbt,
-      asset_id: assetId,
-      recipient_ids: recipientIdList,
-    });
-
-    return result;
   }
 
   /**
@@ -590,6 +553,56 @@ class BiHelixWalletSDK {
     };
 
     const result = await this.fetch("/api/build_csv_psbt", params);
+
+    return result;
+  }
+
+  async createMultiAssetPSBT(pubKey, invoices, feeRate = 120, donation = true) {
+    if (!pubKey) {
+      return { code: 1, msg: "pubKey is null!" };
+    }
+
+    const params = {
+      pk: pubKey,
+      invoices,
+      address: this.address,
+      fee_rate: parseFloat(feeRate),
+      donation,
+    };
+
+    const result = await this.fetch("/api/create_multi_asset_psbt", params);
+
+    return result;
+  }
+
+  async acceptMultiAsset(pubKey, psbt, recipientIds, assetIds) {
+    if (!pubKey) {
+      return { code: 1, msg: "pubKey is null!" };
+    }
+
+    if (!psbt) {
+      return { code: 2, msg: "psbt is null!" };
+    }
+
+    if (!recipientIds) {
+      return { code: 3, msg: "recipientIds is null!" };
+    }
+
+    if (!assetIds) {
+      return { code: 4, msg: "assetIds is null!" };
+    }
+
+    const recipientIdList = recipientIds.split(",");
+    const assetIdList = assetIds.split(",");
+    const params = {
+      pk: pubKey,
+      address: this.address,
+      psbt,
+      recipient_ids: recipientIdList,
+      asset_ids: assetIdList,
+    };
+
+    const result = await this.fetch("/api/accept_multi_asset", params);
 
     return result;
   }
