@@ -22,6 +22,7 @@ The BiHelix Wallet SDK offers the following services:
   - [assetRegistry](#assetRegistry)
   - [assetList](#assetList)
   - [assetBalance](#assetBalance)
+  - [estimateGas](#estimateGas)
   - [transactionList](#transactionList)
   - [createAssetInvoice](#createAssetInvoice)
   - [createAssetPSBT](#createAssetPSBT)
@@ -243,6 +244,39 @@ const result = await sdk.assetBalance(assetId);
     "future": 10000,
     "spendable": 10000
   }
+}
+```
+
+### estimateGas
+
+#### Description
+
+Get estimated gas fee
+
+#### Example
+
+```javascript
+const pubKey = "k7bi2xohFuZ9uSCnC4d...GtTzULg7vyUZkH3";
+const assetId = "rgb:TtFdiA7-obrjvvTbK-b8VrWD9ne-y9NyAPYha-qvSRrrh7s-aJ6Qs7";
+const operate = "transfer";
+const result = await sdk.estimateGas(pubKey, assetId, operate);
+```
+
+#### Parameters
+
+- pubKey: string
+- assetId: string
+- operate: string, "transfer" or "issue"
+  - transfer: get estimated gas fee for transfer
+  - issue = get estimated gas fee for issue token
+
+#### Returns
+
+```json
+{
+  "code": 0,
+  "msg": "success",
+  "data": 580
 }
 ```
 
@@ -498,7 +532,7 @@ const invoices = [
 ];
 const feeRate = 120;
 const donation = true;
-const result = sdk.createMultiAssetPSBT(pubKey, invoices, feeRate, donation);
+const result = await sdk.createMultiAssetPSBT(pubKey, invoices, feeRate, donation);
 ```
 
 #### Parameters
@@ -534,7 +568,7 @@ const pubKey = "wpkh(02c1d6ed8034acd0b8b69d34c49ss602d90250673e998e54b0a8b895817
 const psbt = "9+u5IdAZLZ2iSMMSr//8AA......AABAKUMIbtyg ";
 const recipientIds = "tb:utxob:2XjRbuR-tZ...rZfG5-JaAPnsxHc-eBss1yG,tb:utxob:2XjRbuR-tZn...3CsE-JaAPnsxHc-eBss1yG";
 const assetIds = "rgb:2ZyMWs...b6ir4LNDT-wamPbBDnV-BrjP3fr,rgb:2ZyMWs7-3p...NDT-wamPbBT5B-jXyeRkDnV-BrjP3fr";
-const result = sdk.acceptMultiAsset(pubKey, psbt, recipientIds, assetIds);
+const result = await sdk.acceptMultiAsset(pubKey, psbt, recipientIds, assetIds);
 ```
 
 #### Parameters
@@ -658,7 +692,36 @@ Check for expired transactions and set status to 'failed'
 ```javascript
 const idx = 0;
 const assetOnly = false;
-const result = sdk.failTransfer(idx, assetOnly);
+const result = await sdk.failTransfer(idx, assetOnly);
+```
+
+#### Parameters
+
+- idx: int
+- assetOnly: boolean
+
+#### Returns
+
+```json
+{
+  "code": 0,
+  "msg": "success",
+  "data": false
+}
+```
+
+### delTransfer
+
+#### Description
+
+delete transfer
+
+#### Example
+
+```javascript
+const idx = 0;
+const assetOnly = false;
+const result = await sdk.delTransfer(idx, assetOnly);
 ```
 
 #### Parameters

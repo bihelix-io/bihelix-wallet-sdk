@@ -507,36 +507,6 @@ class BiHelixWalletSDK {
     return result;
   }
 
-  async failTransfer(idx = -1, assetOnly = false) {
-    const params = {
-      address: this.address,
-      asset_only: assetOnly,
-    };
-
-    if (idx != -1) {
-      params["idx"] = idx;
-    }
-
-    const result = await this.fetch("/api/fail_transfer", params);
-
-    return result;
-  }
-
-  async delTransfer(idx = -1, assetOnly = false) {
-    const params = {
-      address: this.address,
-      asset_only: assetOnly,
-    };
-
-    if (idx != -1) {
-      params["idx"] = idx;
-    }
-
-    const result = await this.fetch("/api/del_transfer", params);
-
-    return result;
-  }
-
   async createCSVPSBT(pk, commitment, feeRate = 30) {
     if (!pk) {
       return { code: 1, msg: "pk is null!" };
@@ -603,6 +573,61 @@ class BiHelixWalletSDK {
     };
 
     const result = await this.fetch("/api/accept_multi_asset", params);
+
+    return result;
+  }
+
+  async failTransfer(idx = -1, assetOnly = false) {
+    const params = {
+      address: this.address,
+      asset_only: assetOnly,
+    };
+
+    if (idx != -1) {
+      params["idx"] = idx;
+    }
+
+    const result = await this.fetch("/api/fail_transfer", params);
+
+    return result;
+  }
+
+  async delTransfer(idx = -1, assetOnly = false) {
+    const params = {
+      address: this.address,
+      asset_only: assetOnly,
+    };
+
+    if (idx != -1) {
+      params["idx"] = idx;
+    }
+
+    const result = await this.fetch("/api/del_transfer", params);
+
+    return result;
+  }
+
+  async estimateGas(pubKey, assetId, operate = "transfer") {
+    if (!pubKey) {
+      return { code: 1, msg: "pubKey is null!" };
+    }
+
+    if (!assetId) {
+      return { code: 2, msg: "assetId is null!" };
+    }
+
+    if (!operate) {
+      return { code: 3, msg: "operate is null!" };
+    }
+
+    const params = {
+      pk: pubKey,
+      address: this.address,
+      asset_id: assetId,
+      operate,
+    };
+
+    const result = await this.fetch("/api/estimate_gas", params);
 
     return result;
   }
