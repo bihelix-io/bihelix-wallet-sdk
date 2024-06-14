@@ -268,7 +268,7 @@ const result = await sdk.estimateGas(pubKey, assetId, operate);
 - assetId: string
 - operate: string, "transfer" or "issue"
   - transfer: get estimated gas fee for transfer
-  - issue = get estimated gas fee for issue token
+  - issue: get estimated gas fee for issue token
 
 #### Returns
 
