@@ -55,10 +55,10 @@ The standard deviation for RGB
 
 > When creating a new wallet, it is recommended to use the derivation `m/86'/1'/0'/9` or `m/86/1/0/9` as suggested by the RGB official. Theoretically, other derivations are also supported for now, currently there is no restriction.
 
-The technical accuracy for RGB precision.
+The technical accuracy for RGB asset precision(i.e. RGB20 amount precision)
 
-> It is recommended to set the precision for RGB20 to 8, to match BTC. This ensures consistency between frontend and backend values.
-> The frontend should send values to the backend multiplied by 1e8, and display them in a formatted way, such as: 0.1 BTC.
+> It is recommended to set the precision for RGB20 to 8, to match BTC(or satoshi unit). This ensures consistency between frontend and backend values.
+> The frontend should send values to the backend multiplied by 1e8, and display them in a formatted way, such as: 0.1 RNA.
 > The backend should return token values multiplied by 1e8.
 
 Initialize wallet sdk instance.
