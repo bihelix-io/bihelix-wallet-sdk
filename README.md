@@ -1,16 +1,16 @@
 # BiHelix Wallet SDK
 
-The BiHelix Wallet SDK is an innovative wallet solution tailored for Web3 users and developers, providing them with secure and reliable support for native Bitcoin transactions, ensuring seamless digital asset management.
+The BiHelix Wallet SDK is a cutting-edge solution for Web3 users and developers, offering secure and reliable support for native Bitcoin transactions and seamless digital asset management.
 
-Additionally, the BiHelix Wallet SDK integrates RGB protocol and Lightning Network (LN) technology, enabling developers to effortlessly integrate RGB protocol and Bitcoin payments into their applications with a very shallow learning curve. As the premier choice based on the native Bitcoin blockchain, the BiHelix Wallet SDK offers powerful and flexible tools, empowering you to easily take control of your Web3 assets.
+With the integration of the RGB protocol and Lightning Network (LN) technology, developers can easily add RGB protocol and Bitcoin payments to their applications with minimal learning effort. As a top choice based on the native Bitcoin blockchain, the BiHelix Wallet SDK provides powerful and flexible tools, allowing you to effortlessly manage your Web3 assets.
 
-The BiHelix Wallet SDK offers the following services:
+The BiHelix Wallet SDK offers the following features:
 
-- RGB Asset Protocol (currently supporting RGB20, with upcoming support for RGB21 and more)
-- Client-side PSBT signer
-- Multi-transfer supported
-- Boost transfer supported with BiHelix BID technology
-- PayJoin, CoinJoin procotol will be supported soon
+- RGB Asset Protocol (currently supporting RGB20, with upcoming support for RGB21 and more).
+- Client-side PSBT signer.
+- Support for multi-transfer transactions.
+- Enhanced transfers with BiHelix BID technology.
+- Upcoming support for PayJoin and CoinJoin protocols.
 
 ## Contents
 
@@ -18,24 +18,30 @@ The BiHelix Wallet SDK offers the following services:
 - [Usage](#Usage)
 - [Diagram](#Diagram)
 - [Methods](#Methods)
-  - [unspentList](#unspentList)
-  - [assetRegistry](#assetRegistry)
-  - [assetList](#assetList)
-  - [assetBalance](#assetBalance)
-  - [estimateGas](#estimateGas)
-  - [transactionList](#transactionList)
-  - [createAssetInvoice](#createAssetInvoice)
-  - [createAssetPSBT](#createAssetPSBT)
-  - [createCSVPSBT](#createCSVPSBT)
-  - [signPSBT](#signPSBT)
-  - [unsignedPSPB](#unsignedPSPB)
-  - [createMultiAssetPSBT](#createMultiAssetPSBT)
-  - [acceptMultiAsset](#acceptMultiAsset)
-  - [exportDescriptor](#exportDescriptor)
-  - [exportFullDescriptor](#exportFullDescriptor)
-  - [convertExtendPubKey](#convertExtendPubKey)
-  - [failTransfer](#failTransfer)
-  - [delTransfer](#delTransfer)
+  - Asset
+    - [unspentList](#unspentList)
+    - [assetRegistry](#assetRegistry)
+    - [assetList](#assetList)
+    - [assetBalance](#assetBalance)
+    - [transactionList](#transactionList)
+    - [acceptMultiAsset](#acceptMultiAsset)
+    - [acceptAsset](#acceptAsset)
+  - Gas
+    - [estimateGas](#estimateGas)
+  - Invoice
+    - [createAssetInvoice](#createAssetInvoice)
+  - PSBT
+    - [createCSVPSBT](#createCSVPSBT)
+    - [createMultiAssetPSBT](#createMultiAssetPSBT)
+    - [createAssetPSBT](#createAssetPSBT)
+    - [signPSBT](#signPSBT)
+    - [unsignedPSBT](#unsignedPSBT)
+  - Misc
+    - [exportDescriptor](#exportDescriptor)
+    - [exportFullDescriptor](#exportFullDescriptor)
+    - [convertExtendPubKey](#convertExtendPubKey)
+    - [failTransfer](#failTransfer)
+    - [delTransfer](#delTransfer)
 
 ## Installation
 
@@ -45,21 +51,32 @@ npm install https://github.com/bihelix-io/bihelix-wallet-sdk
 
 ## Usage
 
-> When creating a new wallet, it is recommended to use the derivation `m/86/1/0/9` (**Non-hardened derivation**) as suggested by the RGB official. Theoretically, other derivations are also supported for now, currently there is no restriction.
+The standard deviation for RGB
 
-Initialize wallet instance
+> When creating a new wallet, it is recommended to use the derivation `m/86'/1'/0'/9` or `m/86/1/0/9` as suggested by the RGB official. Theoretically, other derivations are also supported for now, currently there is no restriction.
+
+The technical accuracy for RGB precision.
+
+> It is recommended to set the precision for RGB20 to 8, to match BTC. This ensures consistency between frontend and backend values.
+> The frontend should send values to the backend multiplied by 1e8, and display them in a formatted way, such as: 0.1 BTC.
+> The backend should return token values multiplied by 1e8.
+
+Initialize wallet sdk instance.
 
 ```javascript
-// import sdk package
 const SDK = require("bihelix-wallet-sdk");
-
-// address = "tb1qqek00zlz2eea4r9jkv2hzfss4l0uqayk485xr7"
 const sdk = new SDK(provider, address);
 ```
 
+#### Parameters
+
+- provider: string - The API provider URL.
+- address: string - The wallet address.
+- network: string (optional) - The network to use ("bitcoin", "testnet", or "regtest"). Default is "bitcoin" mainnet.
+
 ## Diagram
 
-RGB20 token (multi) transfer process
+RGB20 token (multi) transfer process.
 
 ![Transfer](./doc/diagram/bid.png)
 
@@ -69,18 +86,22 @@ RGB20 token (multi) transfer process
 
 #### Description
 
-Get unspent utxo list
-
-#### Example
+Retrieves the list of unspent transactions.
 
 ```javascript
-const address = "tb1qfe4n5w37s29h8z2xvkn49596g3wemznkc3cmmx";
-const result = await sdk.unspentList(address);
+async unspentList(address = "", settledOnly = true)
 ```
 
 #### Parameters
 
-- address: string
+- address: string (optional) - The wallet address. Default is the instance bitcoin address.
+- settledOnly: boolean (optional) - Whether to retrieve only settled transactions. Default is true.
+
+#### Example
+
+```javascript
+const unspentList = await sdk.unspentList();
+```
 
 #### Returns
 
@@ -121,15 +142,19 @@ const result = await sdk.unspentList(address);
 
 #### Description
 
-Get issued asset list
+Retrieves the asset registry list from BiHelix node.
+
+```javascript
+async assetRegistry()
+```
+
+#### Parameters
 
 #### Example
 
 ```javascript
-const result = await sdk.assetRegistry();
+const registry = await sdk.assetRegistry();
 ```
-
-#### Parameters
 
 #### Returns
 
@@ -155,24 +180,23 @@ const result = await sdk.assetRegistry();
 
 #### Description
 
-Get asset list
-
-#### Example
+Retrieves the list of assets.
 
 ```javascript
-const assetTypes = "rgb20";
-const result = await sdk.assetList(assetTypes);
+async assetList(assetTypes)
 ```
 
 #### Parameters
 
-- assetTypes: string
+- assetTypes: string - The types of assets to retrieve("rgb20, rgb21").
+
+#### Example
+
+```javascript
+const result = await sdk.assetList("type1, type2");
+```
 
 #### Returns
-
-- settled: confirmed amount
-- future: pending amount
-- spendable: available and spendable amount
 
 ```json
 {
@@ -216,24 +240,23 @@ const result = await sdk.assetList(assetTypes);
 
 #### Description
 
-Get asset balance by specific asset id
-
-#### Example
+Retrieves the balance of a specific asset.
 
 ```javascript
-const assetId = "rgb:TtFdiA7-obrjvvTbK-b8VrWD9ne-y9NyAPYha-qvSRrrh7s-aJ6Qs7";
-const result = await sdk.assetBalance(assetId);
+async assetBalance(assetId)
 ```
 
 #### Parameters
 
-- assetId: string
+- assetId: string - The asset ID.
+
+#### Example
+
+```javascript
+const result = await sdk.assetBalance("asset-id");
+```
 
 #### Returns
-
-- settled: confirmed amount
-- future: pending amount
-- spendable: available and spendable amount
 
 ```json
 {
@@ -247,59 +270,27 @@ const result = await sdk.assetBalance(assetId);
 }
 ```
 
-### estimateGas
-
-#### Description
-
-Get estimated gas fee
-
-#### Example
-
-```javascript
-const pubKey = "k7bi2xohFuZ9uSCnC4d...GtTzULg7vyUZkH3";
-const assetId = "rgb:TtFdiA7-obrjvvTbK-b8VrWD9ne-y9NyAPYha-qvSRrrh7s-aJ6Qs7";
-const operate = "transfer";
-const result = await sdk.estimateGas(pubKey, assetId, operate);
-```
-
-#### Parameters
-
-- pubKey: string
-- assetId: string
-- operate: string, "transfer" or "issue"
-  - transfer: get estimated gas fee for transfer
-  - issue: get estimated gas fee for issue token
-
-#### Returns
-
-```json
-{
-  "code": 0,
-  "msg": "success",
-  "data": 580
-}
-```
-
 ### transactionList
 
 #### Description
 
-Fetch all history transations by specific asset id
-
-#### Example
+Retrieves the list of transactions for a specific asset.
 
 ```javascript
-const assetId = "rgb:TtFdiA7-obrjvvTbK-b8VrWD9ne-y9NyAPYha-qvSRrrh7s-aJ6Qs7";
-const pageSize = 10;
-const pageNo = 1;
-const result = await sdk.transactionList(assetId, pageSize, pageNo);
+async transactionList(assetId, pageSize = 10, pageNo = 1)
 ```
 
 #### Parameters
 
-- assetId: string
-- pageSize: int
-- pageNo: int
+- assetId: string - The asset ID.
+- pageSize: number (optional) - The number of transactions per page. Default is 10.
+- pageNo: number (optional) - The page number. Default is 1.
+
+#### Example
+
+```javascript
+const transactions = await sdk.transactionList("asset-id");
+```
 
 #### Returns
 
@@ -338,26 +329,131 @@ const result = await sdk.transactionList(assetId, pageSize, pageNo);
 }
 ```
 
-### createAssetInvoice
+### acceptMultiAsset
 
 #### Description
 
-Create a transaction invoice form receiver
-
-#### Example
+Accepts multiple assets to finish the transfer.
 
 ```javascript
-const address = "tb1qqek00zlz2eea4r9jkv2hzfss4l0uqayk485xr7,tb1qskr93hdje2pcnp6w558zxxp6wenvc7emvdm567";
-const assetId = "rgb:TtFdiA7-obrjvvTbK-b8VrWD9ne-y9NyAPYha-qvSRrrh7s-aJ6Qs7";
-const amounts = "1000,2000";
-const result = await sdk.createAssetInvoice(address, assetId, amounts);
+async acceptMultiAsset(pubKey, psbt, recipientIds, assetIds)
 ```
 
 #### Parameters
 
-- address: string Multiple receive address separated by commas
-- assetId: string
-- amounts: string each amount to be send
+- pubKey: string - The public key.
+- psbt: string - The partially signed Bitcoin transaction.
+- recipientIds: string - The recipient IDs (comma-separated).
+- assetIds: string - The asset IDs (comma-separated).
+
+#### Example
+
+```javascript
+const result = await sdk.acceptMultiAsset("pubKey", "psbt", "recipient1, recipient2", "asset-id1, asset-id2");
+```
+
+#### Returns
+
+```json
+{
+  "code": 0,
+  "msg": "success",
+  "data": {
+    "txid": "a03af972eea88ee0a8aef0a0bad8c7766399e59d029d443f2ee1c8e189d6e1ab"
+  }
+}
+```
+
+### acceptAsset
+
+#### Description
+
+Accepts a specific asset to finish the transfer.
+
+```javascript
+async acceptAsset(pubKey, psbt, recipientIds, assetId)
+```
+
+#### Parameters
+
+- pubKey: string - The public key.
+- psbt: string - The partially signed Bitcoin transaction.
+- recipientIds: string - The recipient IDs (comma-separated).
+- assetId: string - The asset ID.
+
+#### Example
+
+```javascript
+const result = await sdk.acceptAsset("pubKey", "psbt", "recipient1, recipient2", "asset-id");
+```
+
+#### Returns
+
+```json
+{
+  "code": 0,
+  "msg": "success",
+  "data": {
+    "txid": "2f66a276ce773d7ccf0ab4c86aaa645b56c2cc6998138b8895d558cb9fss320b"
+  }
+}
+```
+
+### estimateGas
+
+#### Description
+
+Estimates the gas fee for a transaction.
+
+```javascript
+async estimateGas(assetId, operate = "transfer")
+```
+
+#### Parameters
+
+- assetId: string - The asset ID.
+- operate: string (optional) - The operation type. Default is "transfer".
+  - transfer: get estimated gas fee for transfer
+  - issue: get estimated gas fee for issue token
+
+#### Example
+
+```javascript
+const gas = await sdk.estimateGas("asset-id");
+```
+
+#### Returns
+
+```json
+{
+  "code": 0,
+  "msg": "success",
+  "data": 580
+}
+```
+
+### createAssetInvoice
+
+#### Description
+
+Creates an asset invoice form receiver.
+
+```javascript
+async createAssetInvoice(address, assetId, amounts, assetTypes = "rgb20")
+```
+
+#### Parameters
+
+- address: string - The recipient address(es) (comma-separated).
+- assetId: string - The asset ID.
+- amounts: string - The amounts (comma-separated).
+- assetTypes: string (optional) - The asset types. Default is "rgb20".
+
+#### Example
+
+```javascript
+const invoice = await sdk.createAssetInvoice("address1, address2", "asset-id", "1000, 2000");
+```
 
 #### Returns
 
@@ -375,30 +471,108 @@ const result = await sdk.createAssetInvoice(address, assetId, amounts);
 }
 ```
 
-### createAssetPSBT
+### createCSVPSBT
 
 #### Description
 
-Create asset psbt
-
-#### Example
+Creates a CSV PSBT (Partially Signed Bitcoin Transaction) for customize csv data.
 
 ```javascript
-const pubKey = "wpkh([a8b0c10f/86/1/0/9]tpubDE89YTZ8zcnE7e74aY5ai4uHvqc5...ZUVAMJ7wekwVumWn6Sowq4JwjCzCVKQz2qSgzD1EV4Qm61W/0/*)";
-const assetId = "rgb:TtFdiA7-obrjvvTbK-b8VrWD9ne-y9NyAPYha-qvSRrrh7s-aJ6Qs7";
-const amounts = "1000,2000";
-const invoices = "rgb:2uxU95k-eh4dzC1y3-...&endpoints=rpc://127.0.0.1/json-rpc,rgb:2uxU95...&endpoints=rpc://127.0.0.1/json-rpc";
-const feeRate = 30;
-const result = await sdk.createAssetPSBT(pubKey, assetId, amounts, invoices, feeRate);
+async createCSVPSBT(pubKey, commitment, feeRate = 30)
 ```
 
 #### Parameters
 
-- pubKey: string
-- assetId: string
-- amounts: string each amount to be send
-- invoices: string each invoice to be send
-- feeRate: float
+- pubKey: string - The public key.
+- commitment: string - The commitment string.
+- feeRate: number (optional) - The fee rate. Default is 30.
+
+#### Example
+
+```javascript
+const psbt = await sdk.createCSVPSBT("pubKey", "customize commitment");
+```
+
+#### Returns
+
+```json
+{
+  "code": 0,
+  "msg": "success",
+  "data": {
+    "psbt": "cHNidP8BAH0BAAAAARK2XXQGzxi8RNXyjcRsewWB......sAs4yJssEHALeFwVPUFJFVAEgYWJkZXc2dpdGFiZWdpaHBpbWtsb3MA"
+  }
+}
+```
+
+### createMultiAssetPSBT
+
+#### Description
+
+Creates a multi-asset PSBT (Partially Signed Bitcoin Transaction).
+
+```javascript
+async createMultiAssetPSBT(pubKey, invoices, feeRate = 120, donation = true)
+```
+
+#### Parameters
+
+- pubKey: string - The public key.
+- invoices: object - The invoices.
+- feeRate: number (optional) - The fee rate. Default is 120.
+- donation: boolean (optional) - Whether to include a donation. Default is true.
+
+#### Example
+
+```javascript
+const invoices = [
+  {
+    asset_id: "rgb:2ZyMWs7-3pbiFDwFu-b6ir4LNDT-wamPbBT5B-jXyeRkDnV-BrjP3fr",
+    invoice: "rgb:2ZyMWs7-3pbiFDwFu-b6ir4LNDT-wamPbBT5B-jXyeRkDnV-...points=rpc://127.0.0.1:8080/json-rpc",
+    recipient_id: "tb:utxob:2bVJDP7-MTAZsTEX6-ksAn2udWY-us1yHuxtG-JJRoCB9rF-Bobnqp",
+    amount: 5000,
+  },
+];
+const psbt = await sdk.createMultiAssetPSBT("pubKey", invoices);
+```
+
+#### Returns
+
+```json
+{
+  "code": 0,
+  "msg": "success",
+  "data": {
+    "psbt": "03af972eea......8c7766399e59d0",
+    "txid": "a03af972eea88ee0a8aef0a0bad8c7766399e59d029d443f2ee1c8e189d6e1ab"
+  }
+}
+```
+
+### createAssetPSBT
+
+#### Description
+
+Creates an asset PSBT (Partially Signed Bitcoin Transaction).
+
+```javascript
+async createAssetPSBT(pubKey, assetId, amounts, invoices, feeRate = 30, donation = true)
+```
+
+#### Parameters
+
+- pubKey: string - The public key.
+- assetId: string - The asset ID.
+- amounts: string - The amounts (comma-separated).
+- invoices: string - The invoices (comma-separated).
+- feeRate: number (optional) - The fee rate. Default is 30.
+- donation: boolean (optional) - Whether to include a donation. Default is true.
+
+#### Example
+
+```javascript
+const psbt = await sdk.createAssetPSBT("pubKey", "asset-id", "1000, 2000", "invoice1, invoice2");
+```
 
 #### Returns
 
@@ -415,57 +589,26 @@ const result = await sdk.createAssetPSBT(pubKey, assetId, amounts, invoices, fee
 }
 ```
 
-### createCSVPSBT
-
-#### Description
-
-Create customize csv data
-
-#### Example
-
-```javascript
-const pk = "wpkh(03d044eefd0699c307a5f2aaf30d7a5434e9ca22173b42497888fc43e439d17cfc)";
-const commitment = "abdetg3stssselisgitabegihpimklos";
-const feeRate = 60.0;
-const result = await sdk.createCSVPSBT(pk, commitment, feeRate);
-```
-
-#### Parameters
-
-- pk: string
-- commitment: string
-- feeRate: float
-
-#### Returns
-
-```json
-{
-  "code": 0,
-  "msg": "success",
-  "data": {
-    "psbt": "cHNidP8BAH0BAAAAARK2XXQGzxi8RNXyjcRsewWB......sAs4yJssEHALeFwAI/AVPUFJFVAEgYWJkZXRnM3N0c3NzZWxpc2dpdGFiZWdpaHBpbWtsb3MA"
-  }
-}
-```
-
 ### signPSBT
 
 #### Description
 
-Sign psbt by sender
-
-#### Example
+Signs a PSBT (Partially Signed Bitcoin Transaction).
 
 ```javascript
-const psbtStr = "cHNidP8BAH0BAAAAATazRphM3Wknh...AAAAAAAACwAAAAA=";
-const privKeys = "cS1xrY3NBeQKvzFqee3b9VeEhCHDmrfE66Y5wpPoRjXfj2iHA6iU,cS177Y3NBeQKvzFqee3b9VeEhggDmrfE5SY5wpP77jXfj2iHA6iU";
-const result = sdk.signPSBT(psbtStr, privKeys);
+signPSBT(psbtStr, privKeys);
 ```
 
 #### Parameters
 
-- psbtStr: string
-- privKeys: string Multiple privateKey separated by commas
+- psbtStr: string - The PSBT string.
+- privKeys: string - The private keys (comma-separated).
+
+#### Example
+
+```javascript
+const signedPsbt = sdk.signPSBT("psbtStr", "privKey1, privKey2");
+```
 
 #### Returns
 
@@ -479,26 +622,27 @@ const result = sdk.signPSBT(psbtStr, privKeys);
 }
 ```
 
-### unsignedPSPB
+### unsignedPSBT
 
 #### Description
 
-Get unsigned psbt data
-
-#### Example
+Creates an unsigned PSBT (Partially Signed Bitcoin Transaction).
 
 ```javascript
-const utxoArray = [utxo, utxo, utxo];
-const address = "tb1qfe4n5w37s29h8z2xvkn49596g3wemznkc3cmmx";
-const amount = 1000;
-const result = sdk.unsignedPSPB(utxoArray, address, amount);
+unsignedPSBT(utxos, address, amount);
 ```
 
 #### Parameters
 
-- utxoArray: array
-- address: string
-- amount: int
+- utxos: object[] - The array of UTXOs.
+- address: string - The recipient address.
+- amount: number - The amount to send.
+
+#### Example
+
+```javascript
+const unsignedPsbt = sdk.unsignedPSBT(utxos, "address", 1000);
+```
 
 #### Returns
 
@@ -512,100 +656,25 @@ const result = sdk.unsignedPSPB(utxoArray, address, amount);
 }
 ```
 
-### createMultiAssetPSBT
-
-#### Description
-
-Create multiple assets PSBT
-
-#### Example
-
-```javascript
-const pubKey = "wpkh(02c1d6ed8034acd0b8b69d3ss49b0602d90250673e998e54b0a8b89581764d7aa5)";
-const invoices = [
-  {
-    asset_id: "rgb:2ZyMWs7-3pbiFDwFu-b6ir4LNDT-wamPbBT5B-jXyeRkDnV-BrjP3fr",
-    invoice: "rgb:2ZyMWs7-3pbiFDwFu-b6ir4LNDT-wamPbBT5B-jXyeRkDnV-...points=rpc://127.0.0.1:8080/json-rpc",
-    recipient_id: "tb:utxob:2bVJDP7-MTAZsTEX6-ksAn2udWY-us1yHuxtG-JJRoCB9rF-Bobnqp",
-    amount: 5000,
-  },
-];
-const feeRate = 120;
-const donation = true;
-const result = await sdk.createMultiAssetPSBT(pubKey, invoices, feeRate, donation);
-```
-
-#### Parameters
-
-- pubKey: string
-- invoices: array
-- feeRate: float
-- donation: boolean
-
-#### Returns
-
-```json
-{
-  "code": 0,
-  "msg": "success",
-  "data": {
-    "psbt": "03af972eea......8c7766399e59d0",
-    "txid": "a03af972eea88ee0a8aef0a0bad8c7766399e59d029d443f2ee1c8e189d6e1ab"
-  }
-}
-```
-
-### acceptMultiAsset
-
-#### Description
-
-Accept multiple assets
-
-#### Example
-
-```javascript
-const pubKey = "wpkh(02c1d6ed8034acd0b8b69d34c49ss602d90250673e998e54b0a8b89581764d7aa5)";
-const psbt = "9+u5IdAZLZ2iSMMSr//8AA......AABAKUMIbtyg ";
-const recipientIds = "tb:utxob:2XjRbuR-tZ...rZfG5-JaAPnsxHc-eBss1yG,tb:utxob:2XjRbuR-tZn...3CsE-JaAPnsxHc-eBss1yG";
-const assetIds = "rgb:2ZyMWs...b6ir4LNDT-wamPbBDnV-BrjP3fr,rgb:2ZyMWs7-3p...NDT-wamPbBT5B-jXyeRkDnV-BrjP3fr";
-const result = await sdk.acceptMultiAsset(pubKey, psbt, recipientIds, assetIds);
-```
-
-#### Parameters
-
-- pubKey: string
-- psbt: string
-- recipientIds: string
-- assetIds: string
-
-#### Returns
-
-```json
-{
-  "code": 0,
-  "msg": "success",
-  "data": {
-    "txid": "a03af972eea88ee0a8aef0a0bad8c7766399e59d029d443f2ee1c8e189d6e1ab"
-  }
-}
-```
-
 ### exportDescriptor
 
 #### Description
 
-Export descriptor public key
-
-#### Example
+Exports the descriptor for a given private key.
 
 ```javascript
-const privateKey = "cRcKBdLUhJqvCR1E8sgKVc46Pygjtm6XXouCXo1ziokXjN1914DT";
-const result = sdk.exportDescriptor(privateKey);
+exportDescriptor(privateKey);
 ```
 
 #### Parameters
 
-- privateKey: string
+- privateKey: string - The private key.
+
+#### Example
+
+```javascript
+const descriptor = sdk.exportDescriptor("privKey");
+```
 
 #### Returns
 
@@ -623,22 +692,23 @@ const result = sdk.exportDescriptor(privateKey);
 
 #### Description
 
-Export full descriptor public key
-
-#### Example
+Exports the full descriptor for a given mnemonic and path.
 
 ```javascript
-const mnemonic = "patient photo smoke cream sketch mandate lunch loyal tornado genre mouse diamond";
-const path = "m/86/1/0/9";
-const password = "";
-const result = sdk.exportFullDescriptor(mnemonic, path, password);
+exportFullDescriptor(mnemonic, path, (password = ""));
 ```
 
 #### Parameters
 
-- privateKey: string
-- path: string
-- password: string default=""
+- mnemonic: string - The mnemonic.
+- path: string - The derivation path.
+- password: string (optional) - The password. Default is "".
+
+#### Example
+
+```javascript
+const fullDescriptor = sdk.exportFullDescriptor("mnemonic", "m/86/1/0/9");
+```
 
 #### Returns
 
@@ -647,7 +717,7 @@ const result = sdk.exportFullDescriptor(mnemonic, path, password);
   "code": 0,
   "msg": "success",
   "data": {
-    "pubKey": "wpkh([ce7e53f5/86/1/0/9]tpubDFgEZRxAk7bi2xohFuZ9uSCnC4d...GtTzULg7vyUZkH3ve4218yj73xocR9zjxY1sRZNyHU4aQaKK4jywe/0/*)"
+    "pubKey": "wpkh([ce7e53f5/86/1/0/9]tpubDFgEZRx2xohFuZ9uSCnC4d...GtTzULg7vyUZkH3vxY1sRZNyHU4aQaKK4jywe/0/*)"
   }
 }
 ```
@@ -656,18 +726,21 @@ const result = sdk.exportFullDescriptor(mnemonic, path, password);
 
 #### Description
 
-Convert extended publickey
-
-#### Example
+Converts an extended public key.
 
 ```javascript
-const vpub = "vpub5a5zQtPcyyjp9FXyTdXF5yNvFnDXM1tkgkmZJAnrWbmKaDhbBHsuUfJLNFBL3AE5k7MRYEEWTLyddh6CzodgFJAhh3GqBV9UroHXwtNVW8g";
-const result = sdk.convertExtendPubKey(vpub);
+convertExtendPubKey(vpub);
 ```
 
 #### Parameters
 
-- vpub: string
+- vpub: string - The extended public key (vpub format).
+
+#### Example
+
+```javascript
+const convertedPubKey = sdk.convertExtendPubKey("vpub");
+```
 
 #### Returns
 
@@ -687,18 +760,20 @@ const result = sdk.convertExtendPubKey(vpub);
 
 Check for expired transactions and set status to 'failed'
 
-#### Example
-
 ```javascript
-const idx = 0;
-const assetOnly = false;
-const result = await sdk.failTransfer(idx, assetOnly);
+async failTransfer(idx = -1, assetOnly = false)
 ```
 
 #### Parameters
 
-- idx: int
-- assetOnly: boolean
+- idx: number (optional) - The transfer index. Default is -1.
+- assetOnly: boolean (optional) - Whether to only fail the asset. Default is false.
+
+#### Example
+
+```javascript
+const result = await sdk.failTransfer(1, true);
+```
 
 #### Returns
 
@@ -714,20 +789,22 @@ const result = await sdk.failTransfer(idx, assetOnly);
 
 #### Description
 
-delete transfer
-
-#### Example
+Delete a transfer.
 
 ```javascript
-const idx = 0;
-const assetOnly = false;
-const result = await sdk.delTransfer(idx, assetOnly);
+async delTransfer(idx = -1, assetOnly = false)
 ```
 
 #### Parameters
 
-- idx: int
-- assetOnly: boolean
+- idx: number (optional) - The transfer index. Default is -1.
+- assetOnly: boolean (optional) - Whether to only delete the asset. Default is false.
+
+#### Example
+
+```javascript
+const result = await sdk.delTransfer(1, true);
+```
 
 #### Returns
 
