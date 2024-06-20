@@ -53,7 +53,7 @@ npm install https://github.com/bihelix-io/bihelix-wallet-sdk
 
 The standard deviation for RGB
 
-> When creating a new wallet, it is recommended to use the derivation `m/86'/1'/0'/9` or `m/86/1/0/9` as suggested by the RGB official. Theoretically, other derivations are also supported for now, currently there is no restriction.
+> When creating a new wallet, it is recommended to use RGB with the OP_RETURN wpkh derivation path `m/84/1/0/9` (testnet) or `m/84/0/0/9` (mainnet) as suggested by the RGB official. Theoretically, other derivations are also supported for now, currently there is no restriction.
 
 The technical accuracy for RGB asset precision(i.e. RGB20 amount precision)
 
