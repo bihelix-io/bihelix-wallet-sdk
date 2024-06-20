@@ -57,10 +57,10 @@ The standard deviation for RGB
 
 Full descriptor with hardend list
 
-- native segwit testnet：wpkh([fingerprint/84h/1h/0h]tpub/9/\*)
-- native segwit mainnet：wpkh([fingerprint/84h/0h/0h]tpub/9/\*)
-- taproot testnet： tr([fingerprint/86h/1h/0h]tpub/10/\*)
-- taproot mainnet： tr([fingerprint/86h/0h/0h]tpub/10/\*)
+- native segwit testnet: wpkh([fingerprint/84h/1h/0h]tpub/9/\*)
+- native segwit mainnet: wpkh([fingerprint/84h/0h/0h]xpub/9/\*)
+- taproot testnet: tr([fingerprint/86h/1h/0h]tpub/10/\*)
+- taproot mainnet: tr([fingerprint/86h/0h/0h]xpub/10/\*)
 
 The technical accuracy for RGB asset precision(i.e. RGB20 amount precision)
 
