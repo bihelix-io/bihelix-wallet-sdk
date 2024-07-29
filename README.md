@@ -42,6 +42,7 @@ The BiHelix Wallet SDK offers the following features:
     - [convertExtendPubKey](#convertExtendPubKey)
     - [failTransfer](#failTransfer)
     - [delTransfer](#delTransfer)
+    - [signMessage](#signMessage)
 
 ## Installation
 
@@ -820,5 +821,36 @@ const result = await sdk.delTransfer(1, true);
   "code": 0,
   "msg": "success",
   "data": false
+}
+```
+
+### signMessage
+
+#### Description
+
+Signs a message using a private key.
+
+```javascript
+signMessage(privkey, msg);
+```
+
+#### Parameters
+
+- privkey: The private key in Wallet Import Format (WIF).
+- msg: The message to be signed.
+
+#### Example
+
+```javascript
+const result = sdk.signMessage("privkey", "msg");
+```
+
+#### Returns
+
+```json
+{
+  "code": 0,
+  "msg": "success",
+  "data": "H6gW5yyvALuYmlz/8DFXvQmegaVOamXsOfk1mPFNoWwo9Zxe08ZU="
 }
 ```

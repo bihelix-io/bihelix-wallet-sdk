@@ -482,6 +482,25 @@ class BiHelixWalletSDK {
   }
 
   /**
+   * Signs a message using a private key.
+   *
+   * This function takes a private key in WIF format and a message, and generates
+   * a signature using the ECPair and bitcoinMessage libraries. The signed message
+   * is then encoded in base64 format and returned.
+   *
+   * @param {string} privkey - The private key in Wallet Import Format (WIF).
+   * @param {string} msg - The message to be signed.
+   * @returns {Object} - An object containing the status code, message, and the signed message.
+   */
+  signMessage(privkey, msg) {
+    const keyPair = bitcoin.ECPair.fromWIF(privkey, this.network);
+    const signature = bitcoinMessage.sign(msg, keyPair.privateKey, keyPair.compressed);
+    const signMsg = signature.toString("base64");
+
+    return { code: 0, msg: "success", data: { signMsg: signMsg } };
+  }
+
+  /**
    * Check for expired transactions and set status to 'failed'.
    * @param {number} [idx=-1] - The transfer index.
    * @param {boolean} [assetOnly=false] - Whether to only fail the asset.
