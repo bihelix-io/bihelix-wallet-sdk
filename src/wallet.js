@@ -1,4 +1,5 @@
 const bitcoin = require("bitcoinjs-lib");
+const bitcoinMessage = require("bitcoinjs-message");
 const request = require("request-promise");
 const bs58check = require("bs58check");
 const bip39 = require("bip39");
