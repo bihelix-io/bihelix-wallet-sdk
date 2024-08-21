@@ -26,6 +26,7 @@ The BiHelix Wallet SDK offers the following features:
     - [transactionList](#transactionList)
     - [acceptMultiAsset](#acceptMultiAsset)
     - [acceptAsset](#acceptAsset)
+    - [acceptBTCAsset](#acceptBTCAsset)
   - Gas
     - [estimateGas](#estimateGas)
   - Invoice
@@ -34,6 +35,7 @@ The BiHelix Wallet SDK offers the following features:
     - [createCSVPSBT](#createCSVPSBT)
     - [createMultiAssetPSBT](#createMultiAssetPSBT)
     - [createAssetPSBT](#createAssetPSBT)
+    - [createBTCPSBT](#createBTCPSBT)
     - [signPSBT](#signPSBT)
     - [unsignedPSBT](#unsignedPSBT)
   - Misc
@@ -54,7 +56,7 @@ npm install https://github.com/bihelix-io/bihelix-wallet-sdk
 
 The standard deviation for RGB
 
-> When creating a new wallet, it is recommended to use RGB with the OP_RETURN wpkh derivation path `m/84h/1h/0h/9` (testnet) or `m/84h/0h/0h/9` (mainnet) as suggested by the RGB official. Theoretically, other derivations are also supported for now, currently there is no restriction.
+> When creating a new wallet, it is recommended to use RGB with the OP_RETURN wpkh derivation path `m/84h/0h/0h/9` (mainnet) as suggested by the RGB official. Theoretically, other derivations are also supported for now, currently there is no restriction.
 
 Full descriptor with hardend list
 
@@ -407,6 +409,40 @@ const result = await sdk.acceptAsset("pubKey", "psbt", "recipient1, recipient2",
 }
 ```
 
+### acceptBTCAsset
+
+#### Description
+
+Accepts a specific asset to finish the transfer.
+
+```javascript
+async acceptBTCAsset(pubKey, psbt, txId)
+```
+
+#### Parameters
+
+- pubKey: string - The public key.
+- psbt: string - The partially signed Bitcoin transaction.
+- txId: string - The transaction ID on Bitcoin.
+
+#### Example
+
+```javascript
+const result = await sdk.acceptBTCAsset("pubKey", "psbt", "txId");
+```
+
+#### Returns
+
+```json
+{
+  "code": 0,
+  "msg": "success",
+  "data": {
+    "txid": "2f66a276ce773d7ccf0ab4c86aaa645b56c2cc6998138b8895d558cb9fss320b"
+  }
+}
+```
+
 ### estimateGas
 
 #### Description
@@ -447,7 +483,7 @@ const gas = await sdk.estimateGas("asset-id");
 Creates an asset invoice form receiver.
 
 ```javascript
-async createAssetInvoice(address, assetId, amounts, assetTypes = "rgb20")
+async createAssetInvoice(address, assetId, amounts, assetTypes = "rgb20", receiverTxids = "", receiverVouts = "")
 ```
 
 #### Parameters
@@ -456,6 +492,8 @@ async createAssetInvoice(address, assetId, amounts, assetTypes = "rgb20")
 - assetId: string - The asset ID.
 - amounts: string - The amounts (comma-separated).
 - assetTypes: string (optional) - The asset types. Default is "rgb20".
+- receiverTxids: string (optional) - The receiver Txids (comma-separated).
+- receiverVouts: string (optional) - The receiver Vouts (comma-separated).
 
 #### Example
 
@@ -593,6 +631,41 @@ const psbt = await sdk.createAssetPSBT("pubKey", "asset-id", "1000, 2000", "invo
     "recipientIds": "utxob:JGV9FPn-rcRxeC1...v-BF6bmZ,utxob:DxvnPGz-NKfPf...iD-fgpej8nu7-ggheVt",
     "pathList": ["m/86/1/0/9/0/2", "m/86/1/0/9/0/6"],
     "assetId": "rgb:2uxU95k-eh4dzC1y3-tfM2Mka5T-eakP4Rh66-MZiA2vUe1-aMfWoH8"
+  }
+}
+```
+
+### createBTCPSBT
+
+#### Description
+
+Creates a Bitcoin PSBT (Partially Signed Bitcoin Transaction).
+
+```javascript
+async createBTCPSBT(pubKey, receiver, feeRate, amount)
+```
+
+#### Parameters
+
+- pubKey: string - The public key.
+- receiver: string - The recipient Bitcoin address.
+- feeRate: number - The fee rate in satoshis per byte.
+- amounts: number - The amount to send in satoshis.
+
+#### Example
+
+```javascript
+const psbt = await sdk.createBTCPSBT("pubKey", "address", 7, 40000);
+```
+
+#### Returns
+
+```json
+{
+  "code": 0,
+  "msg": "success",
+  "data": {
+    "psbt": "cHNidP8BAH0BAAAAARK2XXQGzxi8RNXyjcRsewWB......sAs4yJssEHALeFwVPUFJFVAEgYWJkZXc2dpdGFiZWdpaHBpbWtsb3MA"
   }
 }
 ```

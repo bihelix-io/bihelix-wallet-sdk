@@ -207,6 +207,22 @@ class BiHelixWalletSDK {
   }
 
   /**
+   * Accepts a Bitcoin asset.
+   * @param {string} pubKey - The public key.
+   * @param {string} psbt - The partially signed Bitcoin transaction.
+   * @param {string} txId - The transaction ID.
+   * @returns {Promise<object>} - The API response.
+   */
+  async acceptBTCAsset(pubKey, psbt, txId) {
+    const validation = this.validateParams({ pubKey, psbt, txId });
+    if (validation.code !== 0) {
+      return validation;
+    }
+
+    return this.fetch("/api/accept_btc_asset", { pk: pubKey, address: this.address, psbt, tx_id: txId });
+  }
+
+  /**
    * Estimates the gas fee for a transaction.
    * @param {string} assetId - The asset ID.
    * @param {string} [operate='transfer'] - The operation type.
@@ -228,9 +244,11 @@ class BiHelixWalletSDK {
    * @param {string} assetId - The asset ID.
    * @param {string} amounts - The amounts (comma-separated).
    * @param {string} [assetTypes='rgb20'] - The asset types.
+   * @param {string} receiverTxids - The receiverTxids (comma-separated).
+   * @param {string} receiverVouts - The receiverVouts (comma-separated).
    * @returns {Promise<object>} - The invoice creation result.
    */
-  async createAssetInvoice(address, assetId, amounts, assetTypes = "rgb20") {
+  async createAssetInvoice(address, assetId, amounts, assetTypes = "rgb20", receiverTxids = "", receiverVouts = "") {
     const validation = this.validateParams({ address, assetId, amounts });
     if (validation.code !== 0) {
       return validation;
@@ -238,6 +256,14 @@ class BiHelixWalletSDK {
 
     const addressList = this.parseCommaSeparatedString(address);
     const amountList = this.parseCommaSeparatedString(amounts);
+    let receiverTxidList = [];
+    let receiverVoutList = [];
+    if (receiverTxids) {
+      receiverTxidList = this.parseCommaSeparatedString(receiverTxids);
+    }
+    if (receiverVouts) {
+      receiverVoutList = this.parseCommaSeparatedString(receiverVouts);
+    }
 
     for (const amount of amountList) {
       if (amount <= 0) {
@@ -265,11 +291,18 @@ class BiHelixWalletSDK {
 
     const backData = [];
     for (let i = 0; i < addressList.length; i++) {
-      const invoice = await this.fetch("/api/receive_asset", {
+      let params = {
         address: addressList[i],
         asset_id: assetId,
         amount: parseFloat(amountList[i]),
-      });
+      };
+      if (receiverTxidList.length > 0) {
+        params["receiver_txid"] = receiverTxidList[i];
+      }
+      if (receiverVoutList.length > 0) {
+        params["receiver_vout"] = receiverVoutList[i];
+      }
+      const invoice = await this.fetch("/api/receive_asset", params);
 
       if (invoice.code !== 0) {
         return invoice;
@@ -375,6 +408,23 @@ class BiHelixWalletSDK {
     const pathList = psbt.data.inputs.map((input) => input.bip32Derivation[0].path);
 
     return { code: 0, msg: "success", data: { psbtStr, recipientIds, pathList, assetId } };
+  }
+
+  /**
+   * Creates a Bitcoin PSBT (Partially Signed Bitcoin Transaction).
+   * @param {string} pubKey - The public key.
+   * @param {string} receiver - The recipient Bitcoin address.
+   * @param {number} feeRate - The fee rate in satoshis per byte.
+   * @param {number} amount - The amount to send in satoshis.
+   * @returns {Promise<object>} - The PSBT creation result.
+   */
+  async createBTCPSBT(pubKey, receiver, feeRate, amount) {
+    const validation = this.validateParams({ pubKey, receiver, feeRate, amount });
+    if (validation.code !== 0) {
+      return validation;
+    }
+
+    return this.fetch("/api/create_btc_psbt", { pk: pubKey, address: this.address, to_address: receiver, fee_rate: parseFloat(feeRate), amount: parseInt(amount) });
   }
 
   /**
