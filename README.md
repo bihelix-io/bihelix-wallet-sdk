@@ -42,8 +42,6 @@ The BiHelix Wallet SDK offers the following features:
     - [exportDescriptor](#exportDescriptor)
     - [exportFullDescriptor](#exportFullDescriptor)
     - [convertExtendPubKey](#convertExtendPubKey)
-    - [failTransfer](#failTransfer)
-    - [delTransfer](#delTransfer)
     - [signMessage](#signMessage)
 
 ## Installation
@@ -832,68 +830,6 @@ const convertedPubKey = sdk.convertExtendPubKey("vpub");
   "data": {
     "pubKey": "tpubDE89YTZ8zcnE7e74aY5ai4uHvqc5DeNp4cQJDWdmcXGyRhzkkq47sEHSehBHZUVAMJ7wekwVumWn6Sowq4JwjCzCVKQz2qSgzD1EV4Qm61W"
   }
-}
-```
-
-### failTransfer
-
-#### Description
-
-Check for expired transactions and set status to 'failed'
-
-```javascript
-async failTransfer(idx = -1, assetOnly = false)
-```
-
-#### Parameters
-
-- idx: number (optional) - The transfer index. Default is -1.
-- assetOnly: boolean (optional) - Whether to only fail the asset. Default is false.
-
-#### Example
-
-```javascript
-const result = await sdk.failTransfer(1, true);
-```
-
-#### Returns
-
-```json
-{
-  "code": 0,
-  "msg": "success",
-  "data": false
-}
-```
-
-### delTransfer
-
-#### Description
-
-Delete a transfer.
-
-```javascript
-async delTransfer(idx = -1, assetOnly = false)
-```
-
-#### Parameters
-
-- idx: number (optional) - The transfer index. Default is -1.
-- assetOnly: boolean (optional) - Whether to only delete the asset. Default is false.
-
-#### Example
-
-```javascript
-const result = await sdk.delTransfer(1, true);
-```
-
-#### Returns
-
-```json
-{
-  "code": 0,
-  "msg": "success",
-  "data": false
 }
 ```
 

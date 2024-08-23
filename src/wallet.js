@@ -552,34 +552,6 @@ class BiHelixWalletSDK {
   }
 
   /**
-   * Check for expired transactions and set status to 'failed'.
-   * @param {number} [idx=-1] - The transfer index.
-   * @param {boolean} [assetOnly=false] - Whether to only fail the asset.
-   * @returns {Promise<object>} - The result of the fail transfer request.
-   */
-  async failTransfer(idx = -1, assetOnly = false) {
-    const params = { address: this.address, asset_only: assetOnly };
-    if (idx !== -1) {
-      params.idx = idx;
-    }
-    return this.fetch("/api/fail_transfer", params);
-  }
-
-  /**
-   * Delete a transfer.
-   * @param {number} [idx=-1] - The transfer index.
-   * @param {boolean} [assetOnly=false] - Whether to only delete the asset.
-   * @returns {Promise<object>} - The result of the delete transfer request.
-   */
-  async delTransfer(idx = -1, assetOnly = false) {
-    const params = { address: this.address, asset_only: assetOnly };
-    if (idx !== -1) {
-      params.idx = idx;
-    }
-    return this.fetch("/api/del_transfer", params);
-  }
-
-  /**
    * Checks an asset.
    * @param {string} address - The wallet address.
    * @param {string} assetId - The asset ID.
