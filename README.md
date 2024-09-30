@@ -56,13 +56,6 @@ The standard deviation for RGB
 
 > When creating a new wallet, it is recommended to use RGB with the OP_RETURN wpkh derivation path `m/84h/0h/0h/9` (mainnet) as suggested by the RGB official. Theoretically, other derivations are also supported for now, currently there is no restriction.
 
-Full descriptor with hardend list
-
-- native segwit testnet: wpkh([fingerprint/84h/1h/0h]tpub/9/\*)
-- native segwit mainnet: wpkh([fingerprint/84h/0h/0h]xpub/9/\*)
-- taproot testnet: tr([fingerprint/86h/1h/0h]tpub/10/\*)
-- taproot mainnet: tr([fingerprint/86h/0h/0h]xpub/10/\*)
-
 The technical accuracy for RGB asset precision(i.e. RGB20 amount precision)
 
 > It is recommended to set the precision for RGB20 to 8, to match BTC(or satoshi unit). This ensures consistency between frontend and backend values.
